@@ -20,8 +20,8 @@ class Button{
     textSize(this.size);
     textFont(myFont);
     text(this.word,this.x,this.y,);
-    fill("red");
-    rect(this.x, this.y, this.x - this.size, this.y - this.size);
+    // fill("red");
+    // rect(this.x, this.y, this.x - this.size, this.y - this.size);
   }
   hover(){
     if (mouseX < this.x && mouseX > this.x - this.size && mouseY < this.y && mouseY > this.y - this.size){
