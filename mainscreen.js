@@ -10,14 +10,17 @@ function mainScreen() {
 }
 
 class Button{
-  constructor(x,y, word){
+  constructor(pos, word){
     this.word = word;
-    this.x = x;
-    this.y = y;
+    this.pos = pos;
+    this.x = windowWidth - windowWidth /4;
+    this.y = pos * windowHeight / 9;
     this.size = 50;
     this.transparent = 100;
   }
   display(){
+    this.x = windowWidth - windowWidth /4;
+    this.y = this.pos * windowHeight / 9;
     fill("black");
     textSize(this.size);
     textFont(myFont);
@@ -36,7 +39,7 @@ class Button{
 
 function makeButton(){
   for (let pos = 2; pos < 7; pos ++){
-    let newButton = new Button(windowWidth - windowWidth /4, pos * windowHeight / 9, buttonName[pos-2]);
+    let newButton = new Button(pos , buttonName[pos-2]);
     allButton.push(newButton);
   }
 }

@@ -35,6 +35,12 @@ let allButton = [];
 
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
 
+let map = [];
+const GRIDSIZE = 32;
+const MAPHEIGHT = 30;
+const MAPWIDTH = 60;
+
+let differentBlocks = [];
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -49,6 +55,7 @@ function setup() {
 }
 
 function draw() {
+  resizeCanvas(windowWidth, windowHeight);
   background(255);
   if (gamePhrase === "start"){
     mainScreen();
@@ -67,6 +74,9 @@ function mousePressed(){
       }
     }
   }
+  else if (gamePhrase === "Map"){
+    drawBlock();
+  }
 }
 
 
@@ -84,10 +94,19 @@ function switchPhrase(name){
     gamePhrase = "Zombie";
   }
   if (name === "Map"){
+    fill(200);
+    map = [];
+    for (let y = 0; y <= MAPHEIGHT; y ++){
+      let row_x = [];
+      for (let x = 0; x <= MAPWIDTH; x ++){  
+        row_x.push(0) ;  
+      }                  
+      map.push(row_x);                  
+    }
     gamePhrase = "Map";
   }
-
 }
+
 
 
 
