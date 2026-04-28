@@ -40,7 +40,9 @@ const GRIDSIZE = 32;
 const MAPHEIGHT = 30;
 const MAPWIDTH = 60;
 
-let differentBlocks = [];
+
+let currentBlockColor;
+
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -79,6 +81,37 @@ function mousePressed(){
   }
 }
 
+function keyPressed(){
+  if (key === "b"){
+
+  }
+  if (gamePhrase === "Campaign"){
+
+  }
+  else if (gamePhrase === "Custom"){
+
+  }
+  if (gamePhrase === "Setting"){
+
+  }
+  if (gamePhrase === "Zombie"){
+
+  }
+  if (gamePhrase === "Map"){
+    if (key === "r"){
+      
+    }
+
+    if (key === "g"){
+      
+    }
+
+    if (key === "b"){
+      
+    }
+  }
+}
+
 
 function switchPhrase(name){
   if (name === "Campaign"){
@@ -94,6 +127,7 @@ function switchPhrase(name){
     gamePhrase = "Zombie";
   }
   if (name === "Map"){
+    push();
     fill(200);
     map = [];
     for (let y = 0; y <= MAPHEIGHT; y ++){
@@ -103,7 +137,10 @@ function switchPhrase(name){
       }                  
       map.push(row_x);                  
     }
+    pop();
     gamePhrase = "Map";
+    currentBlockColor = new CurrentBlockColor(255,0,0);
+
   }
 }
 
