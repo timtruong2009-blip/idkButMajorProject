@@ -77,13 +77,16 @@ function mousePressed(){
     }
   }
   else if (gamePhrase === "Map"){
-    drawBlock();
+    if (!currentBlockColor.currentDisplay){
+      drawBlock();
+    }
+    
   }
 }
 
 function keyPressed(){
   if (key === "b"){
-
+    gamePhrase = "start";
   }
   if (gamePhrase === "Campaign"){
 
@@ -98,16 +101,18 @@ function keyPressed(){
 
   }
   if (gamePhrase === "Map"){
-    if (key === "r"){
-      
+    if (key === "c"){
+      currentBlockColor.currentDisplay = !currentBlockColor.currentDisplay;
     }
-
-    if (key === "g"){
-      
+    if (key === "s"){
+      saveJSON(map, "newmap.json");
     }
-
-    if (key === "b"){
-      
+    if (key === "e"){
+      mouse_press_pos = {x : floor(mouseX / GRIDSIZE), y : floor(mouseY/ GRIDSIZE)};
+      map[mouse_press_pos.y][mouse_press_pos.x] = 0;
+    }
+    if (key === "o"){
+      makeNewMap();
     }
   }
 }
@@ -129,22 +134,26 @@ function switchPhrase(name){
   if (name === "Map"){
     push();
     fill(200);
-    map = [];
-    for (let y = 0; y <= MAPHEIGHT; y ++){
-      let row_x = [];
-      for (let x = 0; x <= MAPWIDTH; x ++){  
-        row_x.push(0) ;  
-      }                  
-      map.push(row_x);                  
-    }
+    
+
+    makeNewMap();
     pop();
     gamePhrase = "Map";
-    currentBlockColor = new CurrentBlockColor(255,0,0);
+    currentBlockColor = new CurrentBlockColor();
 
   }
 }
 
-
+function makeNewMap(){
+  map = [];
+  for (let y = 0; y <= MAPHEIGHT; y ++){
+    let row_x = [];
+    for (let x = 0; x <= MAPWIDTH; x ++){  
+      row_x.push(0) ;  
+    }                  
+    map.push(row_x);                  
+  }
+}
 
 
 

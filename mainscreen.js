@@ -19,12 +19,15 @@ class Button{
     this.transparent = 100;
   }
   display(){
+    push();
     this.x = windowWidth - windowWidth /4;
     this.y = this.pos * windowHeight / 9;
     fill("black");
     textSize(this.size);
     textFont(myFont);
     text(this.word,this.x,this.y,);
+
+    pop();
   }
   hover(){
     if (mouseX > this.x && mouseX < this.x + this.size *4 && mouseY < this.y && mouseY > this.y - this.size){
@@ -32,8 +35,10 @@ class Button{
     }
   }
   showHighlight(){
+    push();
     fill(100, 100, 100, this.transparent);
     rect(0, this.y - this.size, windowWidth, this.size + 10);
+    pop();
   }
 }
 

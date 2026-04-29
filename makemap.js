@@ -1,12 +1,27 @@
 
 
 function makingMapScreen(){
-  console.log(currentBlockColor);
   push();
   stroke(255);
+  displayMap();
+  pop();
+
+  if (currentBlockColor.currentDisplay){
+    currentBlockColor.display();
+  }
+  else{
+    currentBlockColor.r.hide();
+    currentBlockColor.g.hide();
+    currentBlockColor.b.hide();
+  }
+  
+  changeColor();
+}
+
+function displayMap(){
   for (let y = 0; y < MAPHEIGHT; y ++){
     for (let x = 0; x < MAPWIDTH; x ++){
-      if (map[y][x]=== 0){
+      if (map[y][x] === 0){
         push();
         fill(200);
         square(x* GRIDSIZE, y * GRIDSIZE, GRIDSIZE);
@@ -20,31 +35,53 @@ function makingMapScreen(){
       }
     }
   }
-  pop();
-  currentBlockColor.display();
-  changeColor();
 }
 
 function drawBlock(){
   mouse_press_pos = {x : floor(mouseX / GRIDSIZE), y : floor(mouseY/ GRIDSIZE)};
-
-  map[mouse_press_pos.y][mouse_press_pos.x] = [r,g,b];
+  currentBlockColor.convert();
+  map[mouse_press_pos.y][mouse_press_pos.x] = [currentBlockColor.rValue,currentBlockColor.gValue,currentBlockColor.bValue];
 }
 
 class CurrentBlockColor{
-  constructor(r,g,b){
-    this.r = r;
-    this.g = g;
-    this.b = b;
+  constructor(){
+    this.r = createSlider(0,255);
+    this.g = createSlider(0,255);
+    this.b = createSlider(0,255);
+    this.currentDisplay = false;
+    
+    this.r.position(300, 10);
+    this.g.position(300, 30);
+    this.b.position(300, 50);
+
+    this.rValue;
+    this.gValue;
+    this.bValue;
+    
   }
   display(){
+    this.convert();
+
+    this.r.show();
+    this.g.show();
+    this.b.show();
+
+    text("R", 290,25);
+    text("G", 290,45);
+    text("B", 290,65);
+    
     push();
-
-    fill(color(this.r,this.g,this.b));
-    square(0,0,100);
-
+    fill(color(this.rValue,this.gValue,this.bValue));
+    square(0,0,300,300);
     pop();
   }
+
+  convert(){
+    this.rValue = this.r.value();
+    this.gValue = this.g.value();
+    this.bValue = this.b.value();
+  }
+
 }
 
 function changeColor(){
