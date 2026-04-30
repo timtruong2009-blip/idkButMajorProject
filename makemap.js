@@ -1,10 +1,9 @@
 
 
 function makingMapScreen(){
-  push();
-  stroke(255);
+  
   displayMap();
-  pop();
+  
 
   if (currentBlockColor.currentDisplay){
     currentBlockColor.display();
@@ -19,6 +18,8 @@ function makingMapScreen(){
 }
 
 function displayMap(){
+  push();
+  stroke(255);
   for (let y = 0; y < MAPHEIGHT; y ++){
     for (let x = 0; x < MAPWIDTH; x ++){
       if (map[y][x] === 0){
@@ -35,6 +36,7 @@ function displayMap(){
       }
     }
   }
+  pop();
 }
 
 function drawBlock(){

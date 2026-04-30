@@ -62,6 +62,9 @@ function draw() {
   if (gamePhrase === "start"){
     mainScreen();
   }
+  if (gamePhrase === "Campaign"){
+    MapCampaign();
+  }
   if (gamePhrase === "Map"){
     makingMapScreen();
   }
@@ -121,6 +124,7 @@ function keyPressed(){
 function switchPhrase(name){
   if (name === "Campaign"){
     gamePhrase = "Campaign";
+    loadingGameMap();
   }
   else if (name === "Custom"){
     gamePhrase = "Custom";
