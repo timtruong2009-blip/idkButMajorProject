@@ -28,12 +28,16 @@
 // const analytics = getAnalytics(app);
 
 let startScreen;
+let campaignscreen;
 let myFont;
 
 let gamePhrase  = "start";
 let allButton = [];
 
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
+let allCampaignButton = [];
+
+let campaignLevel = ["map_list/examplemap.json", "adawd", "adwwad","b","c", "g", "g"];
 
 let map = [];
 const GRIDSIZE = 32;
@@ -46,7 +50,12 @@ let currentBlockColor;
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
+
   startScreen = loadImage("screen image/Baguette start screen.png");
+  campaignscreen = loadImage("screen image/campaignplan.png");
+
+  map = loadJSON("map_list/examplemap.json");
+
 }
 
 function setup() {
@@ -125,6 +134,9 @@ function switchPhrase(name){
   if (name === "Campaign"){
     gamePhrase = "Campaign";
     loadingGameMap();
+    for (let level = 1; level <= campaignLevel.length; level ++){
+      loadLevelText(level);
+    }
   }
   else if (name === "Custom"){
     gamePhrase = "Custom";
