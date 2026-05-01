@@ -92,7 +92,13 @@ function mousePressed(){
     if (!currentBlockColor.currentDisplay){
       drawBlock();
     }
-    
+  }
+  else if (gamePhrase === "Campaign"){
+    for (let num = 0; num < allCampaignButton.length; num ++){
+      if (allCampaignButton[num].hover()){
+        console.log("switch to battle");
+      }
+    }
   }
 }
 
@@ -101,7 +107,6 @@ function keyPressed(){
     gamePhrase = "start";
   }
   if (gamePhrase === "Campaign"){
-
   }
   else if (gamePhrase === "Custom"){
 

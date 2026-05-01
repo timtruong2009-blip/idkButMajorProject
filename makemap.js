@@ -59,11 +59,9 @@ class CurrentBlockColor{
     this.rValue;
     this.gValue;
     this.bValue;
-    
   }
   display(){
     this.convert();
-
     this.r.show();
     this.g.show();
     this.b.show();
@@ -77,7 +75,6 @@ class CurrentBlockColor{
     square(0,0,300,300);
     pop();
   }
-
   convert(){
     this.rValue = this.r.value();
     this.gValue = this.g.value();
