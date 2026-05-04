@@ -2,24 +2,23 @@
 
 function makingMapScreen(){
   
+  push();
+  stroke(255);
   displayMap();
-  
+  pop();
 
+  
   if (currentBlockColor.currentDisplay){
     currentBlockColor.display();
   }
   else{
-    currentBlockColor.r.hide();
-    currentBlockColor.g.hide();
-    currentBlockColor.b.hide();
+    currentBlockColor.rc.hide();
+    currentBlockColor.gc.hide();
+    currentBlockColor.bc.hide();
   }
-  
-  changeColor();
 }
 
 function displayMap(){
-  push();
-  stroke(255);
   for (let y = 0; y < MAPHEIGHT; y ++){
     for (let x = 0; x < MAPWIDTH; x ++){
       if (map[y][x] === 0){
@@ -36,7 +35,6 @@ function displayMap(){
       }
     }
   }
-  pop();
 }
 
 function drawBlock(){
@@ -47,14 +45,14 @@ function drawBlock(){
 
 class CurrentBlockColor{
   constructor(){
-    this.r = createSlider(0,255);
-    this.g = createSlider(0,255);
-    this.b = createSlider(0,255);
+    this.rc = createSlider(0,255);
+    this.gc = createSlider(0,255);
+    this.bc = createSlider(0,255);
     this.currentDisplay = false;
     
-    this.r.position(300, 10);
-    this.g.position(300, 30);
-    this.b.position(300, 50);
+    this.rc.position(300, 10);
+    this.gc.position(300, 30);
+    this.bc.position(300, 50);
 
     this.rValue;
     this.gValue;
@@ -62,9 +60,9 @@ class CurrentBlockColor{
   }
   display(){
     this.convert();
-    this.r.show();
-    this.g.show();
-    this.b.show();
+    this.rc.show();
+    this.gc.show();
+    this.bc.show();
 
     text("R", 290,25);
     text("G", 290,45);
@@ -76,39 +74,13 @@ class CurrentBlockColor{
     pop();
   }
   convert(){
-    this.rValue = this.r.value();
-    this.gValue = this.g.value();
-    this.bValue = this.b.value();
+    this.rValue = this.rc.value();
+    this.gValue = this.gc.value();
+    this.bValue = this.bc.value();
   }
 
 }
 
-function changeColor(){
-  if (keyIsDown(82)){
-    if (currentBlockColor.r !== 255){
-      currentBlockColor.r += 1;
-    }
-    else{
-      currentBlockColor.r = 0;
-    }
-  }
-  if (keyIsDown(71)){
-    if (currentBlockColor.g !== 255){
-      currentBlockColor.g += 1;
-    }
-    else{
-      currentBlockColor.g = 0;
-    }
-  }
-  if (keyIsDown(66)){
-    if (currentBlockColor.b !== 255){
-      currentBlockColor.b += 1;
-    }
-    else{
-      currentBlockColor.b = 0;
-    }
-  }
-}
 
 
 

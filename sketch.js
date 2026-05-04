@@ -37,7 +37,7 @@ let allButton = [];
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
 let allCampaignButton = [];
 
-let campaignLevel = ["map_list/examplemap.json", "adawd", "adwwad","b","c", "g", "g"];
+let campaignLevel = ["map_list/examplemap.json"];
 
 let map = [];
 const GRIDSIZE = 32;
@@ -47,6 +47,7 @@ const MAPWIDTH = 60;
 
 let currentBlockColor;
 
+let player;
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -77,6 +78,9 @@ function draw() {
   if (gamePhrase === "Map"){
     makingMapScreen();
   }
+  if (gamePhrase === "battle"){
+    fightStart();
+  }
   // s
 }
 
@@ -96,7 +100,7 @@ function mousePressed(){
   else if (gamePhrase === "Campaign"){
     for (let num = 0; num < allCampaignButton.length; num ++){
       if (allCampaignButton[num].hover()){
-        console.log("switch to battle");
+        loadMap(campaignLevel[num]);
       }
     }
   }
@@ -143,25 +147,26 @@ function switchPhrase(name){
       loadLevelText(level);
     }
   }
+  else if (name === "battle"){
+    gamePhrase = "battle";
+  }
+
   else if (name === "Custom"){
     gamePhrase = "Custom";
   }
-  if (name === "Setting"){
+  else if (name === "Setting"){
     gamePhrase = "Setting";
   }
-  if (name === "Zombie"){
+  else if (name === "Zombie"){
     gamePhrase = "Zombie";
   }
-  if (name === "Map"){
+  else if (name === "Map"){
     push();
     fill(200);
-    
-
     makeNewMap();
     pop();
     gamePhrase = "Map";
     currentBlockColor = new CurrentBlockColor();
-
   }
 }
 
