@@ -9,6 +9,7 @@ function mainScreen() {
   }
 }
 
+// Button for the main screen selection
 class Button{
   constructor(pos, word){
     this.word = word;

@@ -1,4 +1,5 @@
 
+
 function MapCampaign(){
   image(campaignscreen, 0, 0, windowWidth, windowHeight);
   for (let num = 0; num < allCampaignButton.length; num ++){
@@ -22,7 +23,7 @@ function loadingGameMap(){
   // map = loadJSON("map_list/examplemap.json");
 }
 
-
+// Load all campaign level available
 function loadLevelText(num){
   if (num <= 4){
     allCampaignButton.push(new CampaignButton(windowWidth/ 5 * num , windowHeight /3, num));

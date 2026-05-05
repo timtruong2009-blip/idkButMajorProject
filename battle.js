@@ -8,10 +8,13 @@ function fightStart(){
   pop();
 }
 
-
+// make player
 class PlayerBaguette{
-  constructor(){
-    
+  constructor(x, y, color){
+    this.x = x;
+    this.y = y;
+    this.color = color;
+
   }
 }
 
