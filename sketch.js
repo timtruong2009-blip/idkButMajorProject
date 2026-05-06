@@ -48,6 +48,13 @@ const MAPWIDTH = 60;
 let currentBlockColor;
 
 let player;
+let playerImg;
+
+const GRAVITY = 1;
+let velocity = 0;
+let jumpspeed = -30;
+
+
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -56,6 +63,8 @@ function preload(){
   campaignscreen = loadImage("screen image/campaignplan.png");
 
   map = loadJSON("map_list/examplemap.json");
+
+  playerImg = loadImage("character/baguette.png");
 
 }
 
@@ -93,9 +102,6 @@ function mousePressed(){
     }
   }
   else if (gamePhrase === "Map"){
-    if (!currentBlockColor.currentDisplay){
-      drawBlock();
-    }
   }
   else if (gamePhrase === "Campaign"){
     for (let num = 0; num < allCampaignButton.length; num ++){
@@ -149,6 +155,7 @@ function switchPhrase(name){
   }
   else if (name === "battle"){
     gamePhrase = "battle";
+    player = new PlayerBaguette(0,0);
   }
 
   else if (name === "Custom"){

@@ -6,7 +6,9 @@ function makingMapScreen(){
   stroke(255);
   displayMap();
   pop();
-
+  if (mouseIsPressed === true && !currentBlockColor.currentDisplay){
+    drawBlock();
+  }
   
   if (currentBlockColor.currentDisplay){
     currentBlockColor.display();

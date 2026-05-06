@@ -76,3 +76,4 @@ function loadMap(link){
   let map = loadJSON(link);
   switchPhrase("battle");
 }
+
