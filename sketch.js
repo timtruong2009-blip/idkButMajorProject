@@ -51,8 +51,7 @@ let player;
 let playerImg;
 
 const GRAVITY = 1;
-let velocity = 0;
-let jumpspeed = -30;
+
 
 
 

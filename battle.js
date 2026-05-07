@@ -1,5 +1,6 @@
 
 function fightStart(){
+  console.log(player.xVelocity);
   playerMoving();
   if (!map){
     return;
@@ -8,8 +9,8 @@ function fightStart(){
   generateSurrounding();
   pop();
 
-  loadPlayer();
-  updatePLayer(player);
+  player.loadPlayer();
+  player.updatePLayer();
 }
 
 // make player
@@ -17,31 +18,86 @@ class PlayerBaguette{
   constructor(){
     this.x = windowWidth /2;
     this.y = windowHeight /2;
-    this.speed = 10;
+    this.yVelocity = 0;
+    this.xVelocity = 0;
+
+    this.jumpspeed = -20;
+    this.speed = 1;
+    this.maxSpeed = 5;
+  }
+  loadPlayer(){
+    push();
+    imageMode(CENTER);
+    image(playerImg, windowWidth/2 ,windowHeight /2, 75,75 );
+    pop();
+  }
+
+  playerJump(){
+    if (this.touchGround()){
+      this.yVelocity += this.jumpspeed;
+      this.y += this.yVelocity;
+    }
+  }
+
+  touchGround(){
+    if (this.y <= 500){
+      return false;
+    }
+    else{
+      this.yVelocity = 0;
+      return true;
+    }
+  }
+
+  playerMove(direction){
+    
+    if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
+    }
+    else{
+      this.xVelocity += 0.1 * direction;
+      this.xVelocity = this.xVelocity * 1.1;
+    }
+    
+  }
+
+  updatePLayer(){
+    if (!this.touchGround()){
+      this.yVelocity += GRAVITY;
+      this.y += this.yVelocity;
+    }
+    this.x += this.xVelocity;
+  }
+
+  loseMomentum(){
+    if (this.xVelocity < 0){
+      this.xVelocity += this.speed /4;
+    }
+    else if (this.xVelocity > 0){
+      this.xVelocity -= this.speed /4;
+    }
+    else {
+      this.xVelocity = 0;
+    }
   }
 }
 
-function loadPlayer(){
-  push();
-  imageMode(CENTER);
-  image(playerImg, windowWidth/2 ,windowHeight /2, 75,75 );
-  pop();
-}
+
 
 function playerMoving(){
-  
   if (keyIsDown(65)){
-    player.x -= player.speed;
+    player.playerMove(-1);
   }
-  if (keyIsDown(68)){
-    player.x += player.speed;
+  else if (keyIsDown(68)){
+    player.playerMove(1);
   }
-
+  else{
+    player.loseMomentum();
+  }
   if (keyIsDown(83)){
     
   }
   if (keyIsDown(87)){
-    playerJump(player);
+    player.playerJump(player);
   }
 }
 
@@ -88,29 +144,4 @@ function generateSurrounding() {
   }
 }
 
-function playerJump(who){
-  
-  if (touchGround(who)){
-    velocity += jumpspeed;
-    who.y -= 1;
-  }
-}
 
-function updatePLayer(who){
-  if (!touchGround(who)){
-    who.y += velocity;
-    velocity += GRAVITY;
-  }
-}
-
-function touchGround(who){
-  if (who.y <= 500){
-
-    return false;
-  }
-  else{
-    velocity = 0;
-    return true;
-  }
-  
-}
