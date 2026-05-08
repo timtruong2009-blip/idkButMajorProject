@@ -1,6 +1,6 @@
 
 function fightStart(){
-  console.log(player.xVelocity);
+  
   playerMoving();
   if (!map){
     return;
@@ -22,8 +22,12 @@ class PlayerBaguette{
     this.xVelocity = 0;
 
     this.jumpspeed = -20;
-    this.speed = 1;
-    this.maxSpeed = 5;
+    this.speed = 2;
+    this.maxSpeed = 10;
+
+    this.friction = 5;
+    
+    this.platformY = 0;
   }
   loadPlayer(){
     push();
@@ -39,6 +43,10 @@ class PlayerBaguette{
     }
   }
 
+  searchPlatform(){
+    
+  }
+
   touchGround(){
     if (this.y <= 500){
       return false;
@@ -50,14 +58,13 @@ class PlayerBaguette{
   }
 
   playerMove(direction){
-    
     if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
     }
     else{
-      this.xVelocity += 0.1 * direction;
-      this.xVelocity = this.xVelocity * 1.1;
+      let stuffToAddToVelocity= 0.2 * direction * this.speed;
+      this.xVelocity += stuffToAddToVelocity ;
+      console.log(player.xVelocity);
     }
-    
   }
 
   updatePLayer(){
@@ -70,12 +77,12 @@ class PlayerBaguette{
 
   loseMomentum(){
     if (this.xVelocity < 0){
-      this.xVelocity += this.speed /4;
+      this.xVelocity += this.speed / this.friction;
     }
     else if (this.xVelocity > 0){
-      this.xVelocity -= this.speed /4;
+      this.xVelocity -= this.speed /this.friction;
     }
-    else {
+    if (this.xVelocity < 0.05 && this.xVelocity > -0.05 ) {
       this.xVelocity = 0;
     }
   }
@@ -102,14 +109,14 @@ function playerMoving(){
 }
 
 function generateSurrounding() {
-  let gridX = floor(player.x / GRIDSIZE);
-  let gridY = floor(player.y / GRIDSIZE);
+  let gridX = floor(player.x / REALGRIDSIZE);
+  let gridY = floor(player.y / REALGRIDSIZE);
 
-  let whereInGridx = player.x - gridX * GRIDSIZE;
-  let whereInGridy = player.y - gridY * GRIDSIZE;
+  let whereInGridx = player.x - gridX * REALGRIDSIZE;
+  let whereInGridy = player.y - gridY * REALGRIDSIZE;
 
-  let gridOnScreenH = Math.ceil(windowHeight / GRIDSIZE) ;
-  let gridOnScreenW = Math.ceil(windowWidth / GRIDSIZE) ;
+  let gridOnScreenH = Math.ceil(windowHeight / REALGRIDSIZE) ;
+  let gridOnScreenW = Math.ceil(windowWidth / REALGRIDSIZE) ;
 
   let smallestX = gridX - Math.floor(gridOnScreenW/2);
   let smallestY = gridY - Math.floor(gridOnScreenH/2);
@@ -119,24 +126,24 @@ function generateSurrounding() {
 
   for (let y = smallestY; y < biggestY; y ++){
     for (let x = smallestX; x < biggestX; x ++){
-      let cordX = (x - smallestX) * GRIDSIZE - whereInGridx;
-      let cordY = (y - smallestY) * GRIDSIZE - whereInGridy;
+      let cordX = (x - smallestX) * REALGRIDSIZE - whereInGridx;
+      let cordY = (y - smallestY) * REALGRIDSIZE - whereInGridy;
       
       if (x < 0 || x > 60 || y < 0 || y > 30){
         fill("brown");
-        square(cordX, cordY, GRIDSIZE);
+        square(cordX, cordY, REALGRIDSIZE);
       }
       else{
         if (map[y][x] === 0){
           push();
           fill(200);
-          square(cordX, cordY, GRIDSIZE);
+          square(cordX, cordY, REALGRIDSIZE);
           pop();
         }
         else {
           push();
           fill(color(map[y][x][0], map[y][x][1], map[y][x][2]));
-          square(cordX, cordY, GRIDSIZE);
+          square(cordX, cordY, REALGRIDSIZE);
           pop();
         }
       }

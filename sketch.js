@@ -44,6 +44,7 @@ const GRIDSIZE = 32;
 const MAPHEIGHT = 30;
 const MAPWIDTH = 60;
 
+const REALGRIDSIZE = 50;
 
 let currentBlockColor;
 
