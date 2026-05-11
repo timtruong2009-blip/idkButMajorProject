@@ -9,15 +9,21 @@ function fightStart(){
   generateSurrounding();
   pop();
 
+  player.searchPlatform();
   player.loadPlayer();
   player.updatePLayer();
+
+  push();
+  stroke("black");
+  pop();
+  
 }
 
 // make player
 class PlayerBaguette{
   constructor(){
     this.x = windowWidth /2;
-    this.y = windowHeight /2;
+    this.y = 800;
     this.yVelocity = 0;
     this.xVelocity = 0;
 
@@ -32,7 +38,7 @@ class PlayerBaguette{
   loadPlayer(){
     push();
     imageMode(CENTER);
-    image(playerImg, windowWidth/2 ,windowHeight /2, 75,75 );
+    image(playerImg, windowWidth/2 ,windowHeight /2 -10, 75,75 );
     pop();
   }
 
@@ -45,10 +51,17 @@ class PlayerBaguette{
 
   searchPlatform(){
     
+    let gridX = floor(player.x / REALGRIDSIZE);
+    let gridY = floor(player.y / REALGRIDSIZE);
+    if (gridX < 0 || gridX > 60 || gridY < 0 || gridY > 30){
+    }
+    else if (map[gridY +1][gridX] !== 0){
+      this.platformY = (gridY ) * REALGRIDSIZE;
+    }
   }
 
   touchGround(){
-    if (this.y <= 500){
+    if (this.y < this.platformY){
       return false;
     }
     else{
@@ -63,13 +76,15 @@ class PlayerBaguette{
     else{
       let stuffToAddToVelocity= 0.2 * direction * this.speed;
       this.xVelocity += stuffToAddToVelocity ;
-      console.log(player.xVelocity);
     }
   }
 
   updatePLayer(){
     if (!this.touchGround()){
       this.yVelocity += GRAVITY;
+      if (this.yVelocity >= 20){
+        this.yVelocity = 20;
+      }
       this.y += this.yVelocity;
     }
     this.x += this.xVelocity;
@@ -121,8 +136,8 @@ function generateSurrounding() {
   let smallestX = gridX - Math.floor(gridOnScreenW/2);
   let smallestY = gridY - Math.floor(gridOnScreenH/2);
 
-  let biggestX = gridX + Math.floor(gridOnScreenW/2) +1;
-  let biggestY = gridY + Math.floor(gridOnScreenH/2) +2;
+  let biggestX = gridX + Math.ceil(gridOnScreenW/2) +1;
+  let biggestY = gridY + Math.ceil(gridOnScreenH/2) +2;
 
   for (let y = smallestY; y < biggestY; y ++){
     for (let x = smallestX; x < biggestX; x ++){
@@ -130,8 +145,15 @@ function generateSurrounding() {
       let cordY = (y - smallestY) * REALGRIDSIZE - whereInGridy;
       
       if (x < 0 || x > 60 || y < 0 || y > 30){
-        fill("brown");
+        fill(200);
         square(cordX, cordY, REALGRIDSIZE);
+      }
+
+      else if (x === gridX && y === gridY){
+        push();
+        fill("pink");
+        square(cordX, cordY, REALGRIDSIZE);
+        pop();
       }
       else{
         if (map[y][x] === 0){
@@ -149,6 +171,7 @@ function generateSurrounding() {
       }
     }
   }
+  
 }
 
 
