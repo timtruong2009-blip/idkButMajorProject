@@ -38,7 +38,7 @@ class PlayerBaguette{
   loadPlayer(){
     push();
     imageMode(CENTER);
-    image(playerImg, windowWidth/2 ,windowHeight /2 -10, 75,75 );
+    // image(playerImg, windowWidth/2 ,windowHeight /2 -10, 75,75 );
     pop();
   }
 
@@ -53,15 +53,38 @@ class PlayerBaguette{
     
     let gridX = floor(player.x / REALGRIDSIZE);
     let gridY = floor(player.y / REALGRIDSIZE);
-    if (gridX < 0 || gridX > 60 || gridY < 0 || gridY > 30){
+    print(this.yVelocity);
+    if (this.yVelocity >= 0){
+      
+      if (!this.touchGround()){
+        this.platformY = 1000;
+      }
+      if (gridX < 0 || gridX > 60 || gridY < 0 || gridY > 30){
+      }
+      else if (map[gridY +1][gridX] !== 0){
+        this.platformY = (gridY +1 ) * REALGRIDSIZE;
+      }
+      else{
+        this.platformY = 1000;
+      }
     }
-    else if (map[gridY +1][gridX] !== 0){
-      this.platformY = (gridY ) * REALGRIDSIZE;
-    }
+    // print(this.yVelocity);
+    // if (!this.touchGround()){
+    //   this.platformY = 1000;
+    // }
+    // if (gridX < 0 || gridX > 60 || gridY < 0 || gridY > 30){
+    // }
+    // else if (map[gridY +1][gridX] !== 0){
+    //   this.platformY = (gridY +1 ) * REALGRIDSIZE;
+    // }
+    // else{
+    //   this.platformY = 1000;
+    // }
+    
   }
 
   touchGround(){
-    if (this.y < this.platformY){
+    if (this.y < this.platformY -10){
       return false;
     }
     else{
@@ -153,6 +176,10 @@ function generateSurrounding() {
         push();
         fill("pink");
         square(cordX, cordY, REALGRIDSIZE);
+
+        fill("red");
+        
+        circle(cordX + whereInGridx, cordY + whereInGridy,10);
         pop();
       }
       else{
