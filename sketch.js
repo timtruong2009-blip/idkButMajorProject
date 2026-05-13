@@ -51,9 +51,12 @@ let currentBlockColor;
 let player;
 let playerImg;
 
+let bot;
+
 const GRAVITY = 1;
 
-
+let cheese;
+let pizza;
 
 
 function preload(){
@@ -65,6 +68,9 @@ function preload(){
   map = loadJSON("map_list/examplemap.json");
 
   playerImg = loadImage("character/baguette.png");
+
+  cheese = loadImage("weapon/cheese.png");
+  pizza = loadImage("weapon/pizza weapon.png");
 
 }
 
@@ -127,6 +133,11 @@ function keyPressed(){
   if (gamePhrase === "Zombie"){
 
   }
+  if (gamePhrase === "battle"){
+    if (key === "s"){
+      player.moveDown();
+    }
+  }
   if (gamePhrase === "Map"){
     if (key === "c"){
       currentBlockColor.currentDisplay = !currentBlockColor.currentDisplay;
@@ -155,7 +166,8 @@ function switchPhrase(name){
   }
   else if (name === "battle"){
     gamePhrase = "battle";
-    player = new PlayerBaguette(0,0);
+    player = new PlayerBaguette();
+    bot = new PlayerBaguette();
   }
 
   else if (name === "Custom"){

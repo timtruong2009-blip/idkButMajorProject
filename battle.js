@@ -10,8 +10,12 @@ function fightStart(){
   pop();
 
   player.searchPlatform();
-  player.loadPlayer();
   player.updatePLayer();
+  player.loadPlayer(player.xPosOnScreen, player.yPosOnScreen);
+  
+  bot.searchPlatform();
+  bot.loadPlayer(bot.xPosOnScreen, bot.yPosOnScreen);
+  bot.updatePLayer();
 
   push();
   stroke("black");
@@ -24,6 +28,9 @@ class PlayerBaguette{
   constructor(){
     this.x = windowWidth /2;
     this.y = 800;
+    this.xPosOnScreen = 0;
+    this.yPosOnScreen = 0;
+
     this.yVelocity = 0;
     this.xVelocity = 0;
 
@@ -35,10 +42,10 @@ class PlayerBaguette{
     
     this.platformY = 0;
   }
-  loadPlayer(){
+  loadPlayer(x,y){
     push();
     imageMode(CENTER);
-    // image(playerImg, windowWidth/2 ,windowHeight /2 -10, 75,75 );
+    image(playerImg, x, y -30, 75,75 );
     pop();
   }
 
@@ -50,12 +57,9 @@ class PlayerBaguette{
   }
 
   searchPlatform(){
-    
-    let gridX = floor(player.x / REALGRIDSIZE);
-    let gridY = floor(player.y / REALGRIDSIZE);
-    print(this.yVelocity);
     if (this.yVelocity >= 0){
-      
+      let gridX = floor(player.x / REALGRIDSIZE);
+      let gridY = floor(player.y / REALGRIDSIZE);
       if (!this.touchGround()){
         this.platformY = 1000;
       }
@@ -68,19 +72,6 @@ class PlayerBaguette{
         this.platformY = 1000;
       }
     }
-    // print(this.yVelocity);
-    // if (!this.touchGround()){
-    //   this.platformY = 1000;
-    // }
-    // if (gridX < 0 || gridX > 60 || gridY < 0 || gridY > 30){
-    // }
-    // else if (map[gridY +1][gridX] !== 0){
-    //   this.platformY = (gridY +1 ) * REALGRIDSIZE;
-    // }
-    // else{
-    //   this.platformY = 1000;
-    // }
-    
   }
 
   touchGround(){
@@ -124,9 +115,32 @@ class PlayerBaguette{
       this.xVelocity = 0;
     }
   }
+
+  moveDown(){
+    if (this.touchGround()){
+      player.y += 5;
+    }
+  }
 }
 
+class Weapon{
+  constructor(name){
+    this.bulletList = [];
+    this.name = name;
+    this.range = 0;
+    this.damage = 0;
+    this.frequency = 0;
+    this.lastTimeShot = 0;
+  }
+  displayWeapon(x,y){
+    push();
+    image(this.name, x, y);
+    pop();
+  }
+  shoot(){
 
+  }
+}
 
 function playerMoving(){
   if (keyIsDown(65)){
@@ -137,9 +151,6 @@ function playerMoving(){
   }
   else{
     player.loseMomentum();
-  }
-  if (keyIsDown(83)){
-    
   }
   if (keyIsDown(87)){
     player.playerJump(player);
@@ -180,6 +191,12 @@ function generateSurrounding() {
         fill("red");
         
         circle(cordX + whereInGridx, cordY + whereInGridy,10);
+
+        player.xPosOnScreen = cordX + whereInGridx;
+        player.yPosOnScreen = cordY + whereInGridy;
+
+        bot.xPosOnScreen = cordX + whereInGridx;
+        bot.yPosOnScreen = cordY + whereInGridy;
         pop();
       }
       else{
