@@ -191,7 +191,7 @@ function generateSurrounding() {
         fill("red");
         
         circle(cordX + whereInGridx, cordY + whereInGridy,10);
-
+                                                    
         player.xPosOnScreen = cordX + whereInGridx;
         player.yPosOnScreen = cordY + whereInGridy;
 
