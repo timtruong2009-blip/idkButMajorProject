@@ -37,7 +37,8 @@ let allButton = [];
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
 let allCampaignButton = [];
 
-let campaignLevel = ["map_list/examplemap.json"];
+let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json"];
+let campaignMapData = [];
 
 let map = [];
 const GRIDSIZE = 32;
@@ -45,6 +46,8 @@ const MAPHEIGHT = 30;
 const MAPWIDTH = 60;
 
 const REALGRIDSIZE = 50;
+
+let deathY = 1500;
 
 let currentBlockColor;
 
@@ -58,6 +61,8 @@ const GRAVITY = 1;
 let cheese;
 let pizza;
 
+let everyMovingThing = [];
+
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -65,7 +70,11 @@ function preload(){
   startScreen = loadImage("screen image/Baguette start screen.png");
   campaignscreen = loadImage("screen image/campaignplan.png");
 
-  map = loadJSON("map_list/examplemap.json");
+  // for (let item of campaignLevel){
+  //   mapy = loadJSON(item);
+  //   campaignMapData.push();
+  // }
+  
 
   playerImg = loadImage("character/baguette.png");
 
@@ -167,7 +176,9 @@ function switchPhrase(name){
   else if (name === "battle"){
     gamePhrase = "battle";
     player = new PlayerBaguette();
-    bot = new PlayerBaguette();
+    bot = new BotPlayer();
+    everyMovingThing.push(bot);
+    
   }
 
   else if (name === "Custom"){

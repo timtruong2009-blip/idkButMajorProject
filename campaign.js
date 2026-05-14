@@ -72,8 +72,20 @@ class CampaignButton{
 
 }
 
-function loadMap(link){
-  let map = loadJSON(link);
+// Add this function to your script
+function loadMap(path) {
+  // Pass 'mapDataReceived' as the callback function
+  loadJSON(path, mapDataReceived);
+}
+
+// This runs ONLY when the file is finished loading
+function mapDataReceived(data) {
+  
+  // Extract the list from the curly brackets
+  // Based on your previous logs, it's either data.map or data.mappy
+  map = data.mappy; 
+  
+  // Now that the map is loaded, switch to the battle
   switchPhrase("battle");
 }
 

@@ -1,6 +1,5 @@
 
 function fightStart(){
-  
   playerMoving();
   if (!map){
     return;
@@ -20,14 +19,15 @@ function fightStart(){
   push();
   stroke("black");
   pop();
-  
 }
 
 // make player
 class PlayerBaguette{
   constructor(){
+    this.opponent = [];
+
     this.x = windowWidth /2;
-    this.y = 800;
+    this.y = -2000;
     this.xPosOnScreen = 0;
     this.yPosOnScreen = 0;
 
@@ -60,26 +60,28 @@ class PlayerBaguette{
     if (this.yVelocity >= 0){
       let gridX = floor(player.x / REALGRIDSIZE);
       let gridY = floor(player.y / REALGRIDSIZE);
+
       if (!this.touchGround()){
-        this.platformY = 1000;
+        this.platformY = structuredClone(deathY);
       }
-      if (gridX < 0 || gridX > 60 || gridY < 0 || gridY > 30){
+      if (gridX <= 0 || gridX >= 60 || gridY <= 0 || gridY >= 30){
       }
       else if (map[gridY +1][gridX] !== 0){
         this.platformY = (gridY +1 ) * REALGRIDSIZE;
       }
       else{
-        this.platformY = 1000;
+        this.platformY = structuredClone(deathY);
       }
     }
   }
 
   touchGround(){
-    if (this.y < this.platformY -10){
+    if (this.y < this.platformY -20){
       return false;
     }
     else{
       this.yVelocity = 0;
+      this.y = structuredClone(this.platformY -1);
       return true;
     }
   }
@@ -121,7 +123,23 @@ class PlayerBaguette{
       player.y += 5;
     }
   }
+
+  displayOpponent(){
+    for (let thing of everyMovingThing){
+      thing.x 
+    }
+  }
 }
+
+class BotPlayer extends PlayerBaguette{
+  constructor(){
+    super();
+  }
+  loadPlayer(x,y){
+
+  }
+}
+
 
 class Weapon{
   constructor(name){
@@ -161,6 +179,9 @@ function generateSurrounding() {
   let gridX = floor(player.x / REALGRIDSIZE);
   let gridY = floor(player.y / REALGRIDSIZE);
 
+  let botGridX = floor(bot.x / REALGRIDSIZE);
+  let botGridY = floor(bot.y / REALGRIDSIZE);
+
   let whereInGridx = player.x - gridX * REALGRIDSIZE;
   let whereInGridy = player.y - gridY * REALGRIDSIZE;
 
@@ -195,8 +216,6 @@ function generateSurrounding() {
         player.xPosOnScreen = cordX + whereInGridx;
         player.yPosOnScreen = cordY + whereInGridy;
 
-        bot.xPosOnScreen = cordX + whereInGridx;
-        bot.yPosOnScreen = cordY + whereInGridy;
         pop();
       }
       else{
@@ -212,6 +231,20 @@ function generateSurrounding() {
           square(cordX, cordY, REALGRIDSIZE);
           pop();
         }
+      }
+      if (x === botGridX && y === botGridY){
+        push();
+        fill("red");
+        square(cordX, cordY, REALGRIDSIZE);
+
+        fill("red");
+        
+        // circle(cordX + whereInGridx, cordY + whereInGridy,10);
+                                                    
+        // player.xPosOnScreen = cordX + whereInGridx;
+        // player.yPosOnScreen = cordY + whereInGridy;
+
+        pop();
       }
     }
   }
