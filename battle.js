@@ -1,5 +1,6 @@
 
 function fightStart(){
+  console.log(bot.y);
   playerMoving();
   if (!map){
     return;
@@ -13,7 +14,7 @@ function fightStart(){
   player.loadPlayer(player.xPosOnScreen, player.yPosOnScreen);
   
   bot.searchPlatform();
-  bot.loadPlayer(bot.xPosOnScreen, bot.yPosOnScreen);
+  // bot.loadPlayer(bot.xPosOnScreen, bot.yPosOnScreen);
   bot.updatePLayer();
 
   push();
@@ -26,7 +27,7 @@ class PlayerBaguette{
   constructor(){
     this.opponent = [];
 
-    this.x = windowWidth /2;
+    this.x = windowWidth /2 + 50;
     this.y = -2000;
     this.xPosOnScreen = 0;
     this.yPosOnScreen = 0;
@@ -58,8 +59,8 @@ class PlayerBaguette{
 
   searchPlatform(){
     if (this.yVelocity >= 0){
-      let gridX = floor(player.x / REALGRIDSIZE);
-      let gridY = floor(player.y / REALGRIDSIZE);
+      let gridX = floor(this.x / REALGRIDSIZE);
+      let gridY = floor(this.y / REALGRIDSIZE);
 
       if (!this.touchGround()){
         this.platformY = structuredClone(deathY);
@@ -120,23 +121,20 @@ class PlayerBaguette{
 
   moveDown(){
     if (this.touchGround()){
-      player.y += 5;
+      this.y += 5;
     }
   }
 
   displayOpponent(){
-    for (let thing of everyMovingThing){
-      thing.x 
-    }
+    // for (let thing of everyMovingThing){
+    //   thing.x ;
+    // }
   }
 }
 
 class BotPlayer extends PlayerBaguette{
   constructor(){
     super();
-  }
-  loadPlayer(x,y){
-
   }
 }
 
@@ -171,7 +169,7 @@ function playerMoving(){
     player.loseMomentum();
   }
   if (keyIsDown(87)){
-    player.playerJump(player);
+    player.playerJump();
   }
 }
 

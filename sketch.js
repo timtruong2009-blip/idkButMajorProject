@@ -176,6 +176,7 @@ function switchPhrase(name){
   else if (name === "battle"){
     gamePhrase = "battle";
     player = new PlayerBaguette();
+    
     bot = new BotPlayer();
     everyMovingThing.push(bot);
     
