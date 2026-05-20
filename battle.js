@@ -1,6 +1,6 @@
 
 function fightStart(){
-  console.log(bot.y);
+  // print();
   playerMoving();
   if (!map){
     return;
@@ -10,12 +10,12 @@ function fightStart(){
   pop();
 
   player.searchPlatform();
-  player.updatePLayer();
+  player.updatePlayer();
   player.loadPlayer(player.xPosOnScreen, player.yPosOnScreen);
   
   bot.searchPlatform();
   // bot.loadPlayer(bot.xPosOnScreen, bot.yPosOnScreen);
-  bot.updatePLayer();
+  bot.updatePlayer();
 
   push();
   stroke("black");
@@ -27,7 +27,7 @@ class PlayerBaguette{
   constructor(){
     this.opponent = [];
 
-    this.x = windowWidth /2 + 50;
+    this.x = windowWidth /2 + 100;
     this.y = -2000;
     this.xPosOnScreen = 0;
     this.yPosOnScreen = 0;
@@ -77,12 +77,15 @@ class PlayerBaguette{
   }
 
   touchGround(){
-    if (this.y < this.platformY -20){
+    if (this.y <= this.platformY ){
       return false;
     }
     else{
+      // if (this.y <= this.platformY -2){
+      //   this.y += 1;
+      // }
       this.yVelocity = 0;
-      this.y = structuredClone(this.platformY -1);
+      // this.y = structuredClone(this.platformY -1);
       return true;
     }
   }
@@ -96,16 +99,29 @@ class PlayerBaguette{
     }
   }
 
-  updatePLayer(){
+  updatePlayer(){
     if (!this.touchGround()){
       this.yVelocity += GRAVITY;
+      
+      
       if (this.yVelocity >= 20){
         this.yVelocity = 20;
       }
-      this.y += this.yVelocity;
+      if (this.y + this.yVelocity >= this.platformY ){
+        // print("HA");
+        this.y = structuredClone(this.platformY -2 );
+      }
+      else{
+        this.y += this.yVelocity;
+      }
+    }
+    else{
+      print("sad");
     }
     this.x += this.xVelocity;
+    
   }
+    
 
   loseMomentum(){
     if (this.xVelocity < 0){
