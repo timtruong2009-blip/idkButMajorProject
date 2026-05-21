@@ -1,6 +1,5 @@
 
 function fightStart(){
-  // print();
   playerMoving();
   if (!map){
     return;
@@ -102,14 +101,12 @@ class PlayerBaguette{
   updatePlayer(){
     if (!this.touchGround()){
       this.yVelocity += GRAVITY;
-      
-      
       if (this.yVelocity >= 20){
         this.yVelocity = 20;
       }
       if (this.y + this.yVelocity >= this.platformY ){
-        // print("HA");
-        this.y = structuredClone(this.platformY -2 );
+        print("HA");
+        this.y = structuredClone(this.platformY );
       }
       else{
         this.y += this.yVelocity;
