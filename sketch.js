@@ -63,6 +63,8 @@ let pizza;
 
 let everyMovingThing = [];
 
+let abosluteFreeze = 0;
+
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -145,6 +147,9 @@ function keyPressed(){
   if (gamePhrase === "battle"){
     if (key === "s"){
       player.moveDown();
+    }
+    if (key === "f"){
+      abosluteFreeze = player.platformY;
     }
   }
   if (gamePhrase === "Map"){

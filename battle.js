@@ -1,5 +1,6 @@
 
 function fightStart(){
+  
   playerMoving();
   if (!map){
     return;
@@ -19,6 +20,10 @@ function fightStart(){
   push();
   stroke("black");
   pop();
+  console.log(player.yVelocity);
+  if (abosluteFreeze !== 0){
+    player.y = abosluteFreeze;
+  }
 }
 
 // make player
@@ -41,6 +46,7 @@ class PlayerBaguette{
     this.friction = 5;
     
     this.platformY = 0;
+    this.wall = 0;
   }
   loadPlayer(x,y){
     push();
@@ -48,14 +54,30 @@ class PlayerBaguette{
     image(playerImg, x, y -30, 75,75 );
     pop();
   }
-
+  // Player y/gravity
+  updatePlayer(){
+    this.yVelocity += GRAVITY;
+    if (this.yVelocity >= 20){
+      this.yVelocity = 20;
+    }
+    if (this.y + this.yVelocity >= this.platformY ){
+      console.log("happens");
+      this.y = this.platformY -1;
+      this.yVelocity = 0;
+    }
+    else{
+      this.y += this.yVelocity;
+      
+    }
+    this.x += this.xVelocity;
+    
+  }
   playerJump(){
     if (this.touchGround()){
       this.yVelocity += this.jumpspeed;
       this.y += this.yVelocity;
     }
   }
-
   searchPlatform(){
     if (this.yVelocity >= 0){
       let gridX = floor(this.x / REALGRIDSIZE);
@@ -74,21 +96,23 @@ class PlayerBaguette{
       }
     }
   }
-
   touchGround(){
-    if (this.y <= this.platformY ){
+    if (this.y <= this.platformY -2){
       return false;
     }
     else{
-      // if (this.y <= this.platformY -2){
-      //   this.y += 1;
-      // }
       this.yVelocity = 0;
-      // this.y = structuredClone(this.platformY -1);
       return true;
     }
   }
 
+
+  // Player x/friction/ wall collision
+  moveDown(){
+    if (this.touchGround()){
+      this.y += 5;
+    }
+  }
   playerMove(direction){
     if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
     }
@@ -97,29 +121,6 @@ class PlayerBaguette{
       this.xVelocity += stuffToAddToVelocity ;
     }
   }
-
-  updatePlayer(){
-    if (!this.touchGround()){
-      this.yVelocity += GRAVITY;
-      if (this.yVelocity >= 20){
-        this.yVelocity = 20;
-      }
-      if (this.y + this.yVelocity >= this.platformY ){
-        print("HA");
-        this.y = structuredClone(this.platformY );
-      }
-      else{
-        this.y += this.yVelocity;
-      }
-    }
-    else{
-      print("sad");
-    }
-    this.x += this.xVelocity;
-    
-  }
-    
-
   loseMomentum(){
     if (this.xVelocity < 0){
       this.xVelocity += this.speed / this.friction;
@@ -131,18 +132,26 @@ class PlayerBaguette{
       this.xVelocity = 0;
     }
   }
+  searchWall(){
+    if (this.xVelocity !== 0){
+      let gridX = floor(this.x / REALGRIDSIZE);
+      let gridY = floor(this.y / REALGRIDSIZE);
 
-  moveDown(){
-    if (this.touchGround()){
-      this.y += 5;
+      if (gridX <= 0 || gridX >= 60 || gridY <= 0 || gridY >= 30){
+        return;
+      }
+      else if (map[gridY][gridX +1] !== 0){
+        this.wall = (gridX +1) * REALGRIDSIZE;
+      }
+      else if (map[gridY][gridX -1] !== 0){
+        this.wall = (gridX -1) * REALGRIDSIZE;
+      }
+      else{
+        this.wall = 0;
+      }
     }
   }
 
-  displayOpponent(){
-    // for (let thing of everyMovingThing){
-    //   thing.x ;
-    // }
-  }
 }
 
 class BotPlayer extends PlayerBaguette{
