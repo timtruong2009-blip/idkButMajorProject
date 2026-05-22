@@ -20,7 +20,6 @@ function fightStart(){
   push();
   stroke("black");
   pop();
-  console.log(player.yVelocity);
   if (abosluteFreeze !== 0){
     player.y = abosluteFreeze;
   }
@@ -31,7 +30,7 @@ class PlayerBaguette{
   constructor(){
     this.opponent = [];
 
-    this.x = windowWidth /2 + 100;
+    this.x = 100;
     this.y = -2000;
     this.xPosOnScreen = 0;
     this.yPosOnScreen = 0;
@@ -46,7 +45,8 @@ class PlayerBaguette{
     this.friction = 5;
     
     this.platformY = 0;
-    this.wall = 0;
+    this.rightWall = 1000000;
+    this.leftWall = -1000000;
   }
   loadPlayer(x,y){
     push();
@@ -56,20 +56,9 @@ class PlayerBaguette{
   }
   // Player y/gravity
   updatePlayer(){
-    this.yVelocity += GRAVITY;
-    if (this.yVelocity >= 20){
-      this.yVelocity = 20;
-    }
-    if (this.y + this.yVelocity >= this.platformY ){
-      console.log("happens");
-      this.y = this.platformY -1;
-      this.yVelocity = 0;
-    }
-    else{
-      this.y += this.yVelocity;
-      
-    }
-    this.x += this.xVelocity;
+    this.playerYupdate();
+
+    this.playerXupdate();
     
   }
   playerJump(){
@@ -105,7 +94,20 @@ class PlayerBaguette{
       return true;
     }
   }
-
+  playerYupdate(){
+    this.yVelocity += GRAVITY;
+    if (this.yVelocity >= 20){
+      this.yVelocity = 20;
+    }
+    if (this.y + this.yVelocity >= this.platformY ){
+      this.y = this.platformY -1;
+      this.yVelocity = 0;
+    }
+    else{
+      this.y += this.yVelocity;
+      
+    }
+  }
 
   // Player x/friction/ wall collision
   moveDown(){
@@ -117,6 +119,7 @@ class PlayerBaguette{
     if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
     }
     else{
+      
       let stuffToAddToVelocity= 0.2 * direction * this.speed;
       this.xVelocity += stuffToAddToVelocity ;
     }
@@ -138,17 +141,33 @@ class PlayerBaguette{
       let gridY = floor(this.y / REALGRIDSIZE);
 
       if (gridX <= 0 || gridX >= 60 || gridY <= 0 || gridY >= 30){
+        
         return;
       }
-      else if (map[gridY][gridX +1] !== 0){
-        this.wall = (gridX +1) * REALGRIDSIZE;
+      else if (map[gridY][gridX +1] !== 0){ 
+        print("running");
+        this.rightWall = (gridX +1) * REALGRIDSIZE;
       }
       else if (map[gridY][gridX -1] !== 0){
-        this.wall = (gridX -1) * REALGRIDSIZE;
+        this.leftWall = (gridX -1) * REALGRIDSIZE;
       }
       else{
-        this.wall = 0;
+        this.rightWall = 100000;
+        this.leftWall = -100000;
       }
+    }
+  }
+  playerXupdate(){
+    this.searchWall();
+    if (this.x + this.xVelocity > this.rightWall){
+      this.x = this.rightWall;
+    }
+    else if (this.x + this.xVelocity < this.leftWall){
+      this.x = this.leftWall;
+    }
+    else{
+      console.log(this.rightWall);
+      this.x += this.xVelocity;
     }
   }
 
