@@ -47,23 +47,27 @@ const MAPWIDTH = 60;
 
 const REALGRIDSIZE = 50;
 
-let deathY = 1500;
+let deathY = 3000;
 
 let currentBlockColor;
 
 let player;
 let playerImg;
-
 let bot;
 
 const GRAVITY = 1;
 
 let cheese;
 let pizza;
+let gun;
+let bullet;
 
 let everyMovingThing = [];
+let everyCrate = [];
 
 let abosluteFreeze = 0;
+const crateSpawnSpeed = 1000;
+let crateMillis = 0;
 
 
 function preload(){
@@ -82,6 +86,8 @@ function preload(){
 
   cheese = loadImage("weapon/cheese.png");
   pizza = loadImage("weapon/pizza weapon.png");
+  gun = loadImage("weapon/gun.png");
+  bullet = loadImage("weapon/bullet.png");
 
 }
 
