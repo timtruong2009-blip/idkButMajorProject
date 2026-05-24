@@ -32,9 +32,10 @@ function fightStart(){
 // make player
 class PlayerBaguette{
   constructor(){
-    this.opponent = [];
+    // this.opponent = [];
+    this.direction = true;
 
-    this.currentWeapon = gun;
+    this.currentWeapon = new Pistol();
 
     this.playerXgrid = 0;
     this.playerYgrid = 0;
@@ -58,12 +59,18 @@ class PlayerBaguette{
     this.rightWall = Infinity;
     this.leftWall = -Infinity;
   }
-  loadPlayer(x,y){
+  loadPlayer(){
     push();
+    let x = this.xPosOnScreen;
+    if (!this.direction){
+      scale(-1,1);
+      x = -x;
+    }
+
     imageMode(CENTER);
-    image(playerImg, this.xPosOnScreen, this.yPosOnScreen -30, 75,75 );
+    image(playerImg, x, this.yPosOnScreen -30, 75,75 );
     if (this.currentWeapon !== null){
-      image(this.currentWeapon, this.xPosOnScreen + 10, this.yPosOnScreen -30, 75,75 );
+      this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
     }
     pop();
   }
@@ -201,11 +208,11 @@ class BotPlayer extends PlayerBaguette{
 }
 
 class Weapon{
-  constructor(name){
+  constructor(){
+    this.name = null;
     this.bulletList = [];
-    this.name = name;
     this.range = 0;
-    this.damage = 0;
+    this.knockBack = 0;
     this.frequency = 0;
     this.lastTimeShot = 0;
   }
@@ -215,16 +222,18 @@ class Weapon{
     pop();
   }
   shoot(){
-
+    if (this.lastTimeShot + this.frequency < millis()){
+    console.log("ya");
+    this.lastTimeShot = millis();
+  }
   }
 }
 
 class Crate extends PlayerBaguette{
-  constructor(x, y, type){
+  constructor(x){
     super();
     this.x = x;
     this.maxFallSpeed = 10;
-    this.type = type;
   }
 
 }
@@ -232,9 +241,11 @@ class Crate extends PlayerBaguette{
 function playerMoving(){
   if (keyIsDown(65)){
     player.playerMove(-1);
+    player.direction = true;
   }
   else if (keyIsDown(68)){
     player.playerMove(1);
+    player.direction = false;
   }
   else{
     player.loseMomentum();
@@ -244,6 +255,10 @@ function playerMoving(){
   }
   if (keyIsDown(87)){
     player.playerJump();
+  }
+
+  if (keyIsDown(32)){
+    player.currentWeapon.shoot();
   }
 }
 
@@ -318,9 +333,8 @@ function generateSurrounding() {
 
 function spawningCrate(){
   if (crateMillis + crateSpawnSpeed < millis()){
-    print("ho");
     let xSpawn = floor(random(60));
-    let newCrate = new Crate(xSpawn * REALGRIDSIZE, "gun");
+    let newCrate = new Crate(xSpawn * REALGRIDSIZE);
     everyCrate.push(newCrate);
     crateMillis = millis();
   }
@@ -331,8 +345,28 @@ function updateCrate(){
     item.searchPlatform();
     item.updatePlayer();
 
-    if (item.playerXgrid === player.playerXgrid && item.playerXgrid === player.playerYgrid){
+    if (item.playerXgrid === player.playerXgrid && item.playerYgrid === player.playerYgrid){
+      let randomWeapon = allWeapon[floor(random(allWeapon.length))];
 
+      if (randomWeapon === "pistol"){
+        player.currentWeapon = new Pistol();
+      }
+
+      else if (randomWeapon === "pizza"){
+        player.currentWeapon = new Pizza;
+      }
+
+      else if (randomWeapon === "cheese"){
+        player.currentWeapon = new Cheese();
+      }
+
+      else if (randomWeapon === "cheese"){
+        player.currentWeapon = new Cheese();
+      }
+
+      console.log(randomWeapon);
+      everyCrate.splice(everyCrate.indexOf(item), 1);
+      
     }
   }
 }
@@ -355,7 +389,7 @@ function displayCrate(x, y, cordX, cordY){
   }
 }
 
-//----------------------------------------------------- Bot------------------------------------------------------
+//----------------------------------------------------- Bot ------------------------------------------------------
 
 function displayBot(x, y, cordX, cordY){
   bot.playerXgrid = floor(bot.x / REALGRIDSIZE);
@@ -369,7 +403,37 @@ function displayBot(x, y, cordX, cordY){
   }
 }
 
+//----------------------------------------------------- Gun ---------------------------------------------------------
 
+class Pistol extends Weapon{
+  constructor(){
+    super();
+    this.name = pistol;
+    this.range = 1000;
+    this.knockBack = 10;
+    this.frequency = 700;
+  }
+}
+
+class Pizza extends Weapon{
+  constructor(){
+    super();
+    this.name = pizza;
+    this.range = 1000;
+    this.knockBack = 20;
+    this.frequency = 1000;
+  }
+}
+
+class Cheese extends Weapon{
+  constructor(){
+    super();
+    this.name = cheese;
+    this.range = 1000;
+    this.knockBack = 80;
+    this.frequency = 100;
+  }
+}
 
 
 

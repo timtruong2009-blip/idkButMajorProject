@@ -59,12 +59,15 @@ const GRAVITY = 1;
 
 let cheese;
 let pizza;
-let gun;
+let pistol;
 let bullet;
 
 let everyMovingThing = [];
 let everyCrate = [];
 
+let allWeapon = [];
+
+let doorDashCrate;
 let abosluteFreeze = 0;
 const crateSpawnSpeed = 1000;
 let crateMillis = 0;
@@ -84,9 +87,17 @@ function preload(){
 
   playerImg = loadImage("character/baguette.png");
 
+  doorDashCrate = loadImage("character/doordash.png")
+
   cheese = loadImage("weapon/cheese.png");
+  allWeapon.push("cheese");
+
   pizza = loadImage("weapon/pizza weapon.png");
-  gun = loadImage("weapon/gun.png");
+  allWeapon.push("pizza");
+
+  pistol = loadImage("weapon/gun.png");
+  allWeapon.push("pistol");
+  
   bullet = loadImage("weapon/bullet.png");
 
 }
