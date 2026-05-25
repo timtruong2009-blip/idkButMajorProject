@@ -77,11 +77,9 @@ class PlayerBaguette{
 
   // Player y/gravity
   updatePlayer(){
-    
     this.playerYupdate();
 
     this.playerXupdate();
-    
   }
   playerJump(){
     if (this.touchGround()){
@@ -90,7 +88,6 @@ class PlayerBaguette{
     }
   }
   searchPlatform(){
-
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       return;
     }
@@ -225,7 +222,7 @@ class Weapon{
     if (this.lastTimeShot + this.frequency < millis()){
     console.log("ya");
     this.lastTimeShot = millis();
-  }
+    }
   }
 }
 
@@ -434,6 +431,14 @@ class Cheese extends Weapon{
     this.frequency = 100;
   }
 }
+
+// pizza bommarang
+
+// honey bottle genade / less friction
+
+// fries shotgun
+
+// 
 
 
 
