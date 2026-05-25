@@ -98,7 +98,7 @@ function preload(){
   pistol = loadImage("weapon/gun.png");
   allWeapon.push("pistol");
   
-  bullet = loadImage("weapon/bullet.png");
+  gunBullet = loadImage("weapon/bullet.png");
 
 }
 
@@ -198,6 +198,7 @@ function switchPhrase(name){
   else if (name === "battle"){
     gamePhrase = "battle";
     player = new PlayerBaguette();
+    player.currentWeapon = new Pistol();
     
     bot = new BotPlayer();
     everyMovingThing.push(bot);

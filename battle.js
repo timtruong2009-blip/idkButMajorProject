@@ -16,7 +16,7 @@ function fightStart(){
   
   bot.searchPlatform();
   bot.updatePlayer();
-  bot.loadPlayer();
+  // bot.loadPlayer();
 
   updateCrate();
 
@@ -35,7 +35,9 @@ class PlayerBaguette{
     // this.opponent = [];
     this.direction = true;
 
-    this.currentWeapon = new Pistol();
+    this.currentWeapon = null;
+    this.bulletList = [];
+
 
     this.playerXgrid = 0;
     this.playerYgrid = 0;
@@ -73,6 +75,7 @@ class PlayerBaguette{
       this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
     }
     pop();
+    this.currentWeapon.displayBullet();
   }
 
   // Player y/gravity
@@ -190,6 +193,11 @@ class PlayerBaguette{
       this.x += this.xVelocity;
     }
   }
+
+  // Shooting
+  shoot(){
+    let newBullet = {x:this.x, y:this.y, type:this.currentWeapon.name}
+  }
 }
 
 class BotPlayer extends PlayerBaguette{
@@ -201,28 +209,6 @@ class BotPlayer extends PlayerBaguette{
     imageMode(CENTER);
     image(playerImg, this.x, this.y -30, 75,75 );
     pop();
-  }
-}
-
-class Weapon{
-  constructor(){
-    this.name = null;
-    this.bulletList = [];
-    this.range = 0;
-    this.knockBack = 0;
-    this.frequency = 0;
-    this.lastTimeShot = 0;
-  }
-  displayWeapon(x,y){
-    push();
-    image(this.name, x, y);
-    pop();
-  }
-  shoot(){
-    if (this.lastTimeShot + this.frequency < millis()){
-    console.log("ya");
-    this.lastTimeShot = millis();
-    }
   }
 }
 
@@ -255,9 +241,72 @@ function playerMoving(){
   }
 
   if (keyIsDown(32)){
-    player.currentWeapon.shoot();
+    
   }
 }
+
+//------------------------------------------------ Weapon ----------------------------------------------------
+
+class Weapon{
+  constructor(){
+    this.name = null;
+    this.bullet = null;
+    this.bulletList = [];
+    
+    this.range = 0;
+    this.knockBack = 0;
+    this.frequency = 0;
+    this.lastTimeShot = 0;
+    this.gunSpeed = 1;
+  }
+  displayWeapon(x,y){
+    push();
+    image(this.name, x, y);
+    pop();
+  }
+
+}
+
+class Pistol extends Weapon{
+  constructor(){
+    super();
+    this.name = pistol;
+    this.bullet = gunBullet;
+    this.range = 1000;
+    this.knockBack = 10;
+    this.frequency = 700;
+  }
+}
+
+class Pizza extends Weapon{
+  constructor(){
+    super();
+    this.name = pizza;
+    this.bullet = pizza;
+    this.range = 500;
+    this.knockBack = 20;
+    this.frequency = 1000;
+  }
+}
+
+class Cheese extends Weapon{
+  constructor(){
+    super();
+    this.name = cheese;
+    this.bullet = cheese;
+    this.range = 1000;
+    this.knockBack = 80;
+    this.frequency = 100;
+  }
+}
+
+// pizza bommarang
+
+// honey bottle genade / less friction
+
+// fries shotgun
+
+// 
 
 //------------------------------------------------Map---------------------------------------------------------
 
@@ -296,9 +345,6 @@ function generateSurrounding() {
                                                     
         player.xPosOnScreen = cordX + whereInGridx;
         player.yPosOnScreen = cordY + whereInGridy;
-
-        // player.xPosOnScreen = cordX + whereInGridx;
-        // player.yPosOnScreen = cordY + whereInGridy;
         pop();
       }
       else{
@@ -320,7 +366,7 @@ function generateSurrounding() {
 
       displayCrate(x, y, cordX, cordY);
       
-
+      player.currentWeapon.displayBullet(x, y, cordX, cordY);
     }
   }
   
@@ -350,7 +396,7 @@ function updateCrate(){
       }
 
       else if (randomWeapon === "pizza"){
-        player.currentWeapon = new Pizza;
+        player.currentWeapon = new Pizza();
       }
 
       else if (randomWeapon === "cheese"){
@@ -362,7 +408,7 @@ function updateCrate(){
       }
 
       console.log(randomWeapon);
-      everyCrate.splice(everyCrate.indexOf(item), 1);
+      everyCrate.splice(everyCrate.indexOf(), 1);
       
     }
   }
@@ -402,43 +448,7 @@ function displayBot(x, y, cordX, cordY){
 
 //----------------------------------------------------- Gun ---------------------------------------------------------
 
-class Pistol extends Weapon{
-  constructor(){
-    super();
-    this.name = pistol;
-    this.range = 1000;
-    this.knockBack = 10;
-    this.frequency = 700;
-  }
-}
 
-class Pizza extends Weapon{
-  constructor(){
-    super();
-    this.name = pizza;
-    this.range = 1000;
-    this.knockBack = 20;
-    this.frequency = 1000;
-  }
-}
-
-class Cheese extends Weapon{
-  constructor(){
-    super();
-    this.name = cheese;
-    this.range = 1000;
-    this.knockBack = 80;
-    this.frequency = 100;
-  }
-}
-
-// pizza bommarang
-
-// honey bottle genade / less friction
-
-// fries shotgun
-
-// 
 
 
 
