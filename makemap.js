@@ -23,7 +23,7 @@ function makingMapScreen(){
 function displayMap(){
   for (let y = 0; y < MAPHEIGHT; y ++){
     for (let x = 0; x < MAPWIDTH; x ++){
-      if (map[y][x] === 0){
+      if (map[y][x] === 0 || map[y][x] === 1 || map[y][x] === 2){
         push();
         fill(200);
         square(x* GRIDSIZE, y * GRIDSIZE, GRIDSIZE);

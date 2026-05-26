@@ -37,7 +37,7 @@ let allButton = [];
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
 let allCampaignButton = [];
 
-let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json"];
+let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json"];
 let campaignMapData = [];
 
 let map = [];
@@ -63,6 +63,7 @@ let pistol;
 let bullet;
 
 let everyMovingThing = [];
+let bulletList = [];
 let everyCrate = [];
 
 let allWeapon = [];
@@ -79,10 +80,10 @@ function preload(){
   startScreen = loadImage("screen image/Baguette start screen.png");
   campaignscreen = loadImage("screen image/campaignplan.png");
 
-  // for (let item of campaignLevel){
-  //   mapy = loadJSON(item);
-  //   campaignMapData.push();
-  // }
+  for (let item of campaignLevel){
+    let mapy = loadJSON(item);
+    campaignMapData.push(mapy);
+  }
   
 
   playerImg = loadImage("character/baguette.png");
@@ -204,8 +205,10 @@ function switchPhrase(name){
     player = new PlayerBaguette();
     player.currentWeapon = new Pistol();
     
+    
     bot = new BotPlayer();
     everyMovingThing.push(bot);
+    everyMovingThing.push(player);
     
   }
 
@@ -233,7 +236,7 @@ function makeNewMap(){
   for (let y = 0; y <= MAPHEIGHT; y ++){
     let row_x = [];
     for (let x = 0; x <= MAPWIDTH; x ++){  
-      row_x.push(0) ;  
+      row_x.push(floor(random(2.99))) ;  
     }                  
     map.push(row_x);                  
   }

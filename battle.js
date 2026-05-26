@@ -1,9 +1,10 @@
 
 function fightStart(){
-  console.log(player.doubleJump);
+  console.log();
   if (!map){
     return;
   }
+  // console.log(map);
   push();
   generateSurrounding();
   pop();
@@ -36,7 +37,8 @@ class PlayerBaguette{
     this.direction = true;
 
     this.currentWeapon = null;
-    this.bulletList = [];
+    // this.bulletList = [];
+    this.health = 5;
 
 
     this.playerXgrid = 0;
@@ -83,6 +85,15 @@ class PlayerBaguette{
     this.playerYupdate();
 
     this.playerXupdate();
+
+    if (this.y > 2900){
+      this.y = -2000;
+      this.yVelocity = 0;
+      this.health -= 1;
+      if (this.health === 0){
+        console.log("you lose");
+      }
+    }
   }
   playerJump(){
     if (this.touchGround()){
@@ -95,6 +106,7 @@ class PlayerBaguette{
     }
   }
   searchPlatform(){
+    
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       return;
     }
@@ -103,7 +115,7 @@ class PlayerBaguette{
         this.platformY = structuredClone(deathY);
       }
       
-      if (map[this.playerYgrid +1][this.playerXgrid] !== 0  && map[this.playerYgrid][this.playerXgrid] === 0){
+      if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid]) && ! Array.isArray(map[this.playerYgrid][this.playerXgrid])){
         this.platformY = (this.playerYgrid +1 ) * REALGRIDSIZE;
       }
       else{
@@ -172,18 +184,17 @@ class PlayerBaguette{
       return;
     }
     else{
-      if (map[this.playerYgrid][this.playerXgrid +1] !== 0 && map[this.playerYgrid][this.playerXgrid] === 0){ 
+      if (Array.isArray(map[this.playerYgrid ][this.playerXgrid +1]) && ! Array.isArray(map[this.playerYgrid][this.playerXgrid])){ 
         this.rightWall = (this.playerXgrid +1) * REALGRIDSIZE;
       }
       else{
         this.rightWall = Infinity;
       }
 
-      if (map[this.playerYgrid][this.playerXgrid -1] !== 0 && map[this.playerYgrid][this.playerXgrid] === 0){
+      if (Array.isArray(map[this.playerYgrid ][this.playerXgrid -1]) && ! Array.isArray(map[this.playerYgrid][this.playerXgrid])){
         this.leftWall = this.playerXgrid * REALGRIDSIZE;
       }
       else{
-        
         this.leftWall = -Infinity;
       }
     }
@@ -206,8 +217,15 @@ class PlayerBaguette{
 
   // Shooting
   shoot(){
-    let newBullet = {x:this.x, y:this.y, type:this.currentWeapon.name}
+    let direc = 1;
+    if (this.direction){
+      direc = -1;
+    }
+    let newBullet = new Bullet(this.x, this.y, this.currentWeapon.bullet, this.currentWeapon.range, this.currentWeapon.knockBack, this.currentWeapon.bulletSpeed * direc);
+    bulletList.push(newBullet);
   }
+
+
 }
 
 class BotPlayer extends PlayerBaguette{
@@ -248,11 +266,23 @@ function playerMoving(){
   // }
 
   if (keyIsDown(32)){
-    
+    console.log("shoot");
+    player.shoot();
   }
 }
 
 //------------------------------------------------ Weapon ----------------------------------------------------
+
+class Bullet{
+  constructor(x, y, type, range, knockBack, speed, owner){
+    this.x = x;
+    this.y = y;
+    this.type = type;
+    this.range = range;
+    this.knockBack = knockBack;
+    this.speed = speed;
+  }
+}
 
 class Weapon{
   constructor(){
@@ -265,6 +295,7 @@ class Weapon{
     this.frequency = 0;
     this.lastTimeShot = 0;
     this.gunSpeed = 1;
+    this.bulletSpeed = 10;
   }
   displayWeapon(x,y){
     push();
@@ -361,6 +392,18 @@ function generateSurrounding() {
           square(cordX, cordY, REALGRIDSIZE);
           pop();
         }
+        else if (map[y][x] === 1){
+          push();
+          fill(205);
+          square(cordX, cordY, REALGRIDSIZE);
+          pop();
+        }
+        else if (map[y][x] === 2){
+          push();
+          fill(210);
+          square(cordX, cordY, REALGRIDSIZE);
+          pop();
+        }
         else {
           push();
           fill(color(map[y][x][0], map[y][x][1], map[y][x][2]));
@@ -373,9 +416,26 @@ function generateSurrounding() {
 
       displayCrate(x, y, cordX, cordY);
       
+      
     }
   }
-  
+  // Load Bullet
+  for (let i = bulletList.length - 1; i >= 0; i--) {
+    let shot = bulletList[i];
+    shot.x += shot.speed; 
+    let bulletScreenX = (floor(shot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + shot.x % REALGRIDSIZE;
+    let bulletScreenY = (floor(shot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + shot.y % REALGRIDSIZE;
+
+    push();
+    imageMode(CENTER);
+    image(shot.type, bulletScreenX, bulletScreenY, 100, 50);
+    pop();
+
+    shot.range -= Math.abs(shot.speed);
+    if (shot.range <= 0) {
+      bulletList.splice(i, 1);
+    }
+  }
 }
 
 //------------------------------------------------Crate---------------------------------------------------------------
@@ -452,7 +512,6 @@ function displayBot(x, y, cordX, cordY){
   }
 }
 
-//----------------------------------------------------- Gun ---------------------------------------------------------
 
 
 

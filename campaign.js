@@ -81,11 +81,8 @@ function loadMap(path) {
 // This runs ONLY when the file is finished loading
 function mapDataReceived(data) {
   
-  // Extract the list from the curly brackets
-  // Based on your previous logs, it's either data.map or data.mappy
   map = data.mappy; 
-  
-  // Now that the map is loaded, switch to the battle
+  print(data);
   switchPhrase("battle");
 }
 
