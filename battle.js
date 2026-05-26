@@ -1,6 +1,6 @@
 
 function fightStart(){
-  
+  console.log(player.doubleJump);
   if (!map){
     return;
   }
@@ -54,6 +54,7 @@ class PlayerBaguette{
     this.speed = 2;
     this.maxSpeed = 10;
     this.maxFallSpeed = 20;
+    this.doubleJump = false;
 
     this.friction = 5;
     
@@ -75,7 +76,6 @@ class PlayerBaguette{
       this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
     }
     pop();
-    this.currentWeapon.displayBullet();
   }
 
   // Player y/gravity
@@ -88,6 +88,10 @@ class PlayerBaguette{
     if (this.touchGround()){
       this.yVelocity += this.jumpspeed;
       this.y += this.yVelocity;
+      this.doubleJump = true;
+    }
+    else if (this.doubleJump){
+      this.doubleJumping();
     }
   }
   searchPlatform(){
@@ -124,11 +128,17 @@ class PlayerBaguette{
     if (this.y + this.yVelocity >= this.platformY ){
       this.y = this.platformY -1;
       this.yVelocity = 0;
+      this.doubleJump = false;
     }
     else{
       this.y += this.yVelocity;
       
     }
+  }
+  doubleJumping(){
+    this.yVelocity = structuredClone(this.jumpspeed);
+    this.doubleJump = false;
+    console.log("ha");
   }
 
   // Player x/friction/ wall collision
@@ -233,12 +243,9 @@ function playerMoving(){
   else{
     player.loseMomentum();
   }
-  if (keyIsDown(87)){
-    player.playerJump();
-  }
-  if (keyIsDown(87)){
-    player.playerJump();
-  }
+  // if (keyIsDown(87)){
+  //   // player.playerJump();
+  // }
 
   if (keyIsDown(32)){
     
@@ -366,7 +373,6 @@ function generateSurrounding() {
 
       displayCrate(x, y, cordX, cordY);
       
-      player.currentWeapon.displayBullet(x, y, cordX, cordY);
     }
   }
   
@@ -408,7 +414,7 @@ function updateCrate(){
       }
 
       console.log(randomWeapon);
-      everyCrate.splice(everyCrate.indexOf(), 1);
+      everyCrate.splice(everyCrate.indexOf(item), 1);
       
     }
   }

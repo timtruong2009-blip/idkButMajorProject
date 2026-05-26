@@ -165,10 +165,14 @@ function keyPressed(){
     if (key === "s"){
       player.moveDown();
     }
-    if (key === "f"){
-      abosluteFreeze = player.platformY;
+    // if (key === "f"){
+    //   abosluteFreeze = player.platformY;
+    // }
+    if (keyCode === 87){
+      player.playerJump();
     }
   }
+  
   if (gamePhrase === "Map"){
     if (key === "c"){
       currentBlockColor.currentDisplay = !currentBlockColor.currentDisplay;
