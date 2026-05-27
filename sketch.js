@@ -37,8 +37,17 @@ let allButton = [];
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
 let allCampaignButton = [];
 
-let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json"];
+let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json"];
 let campaignMapData = [];
+
+let weaponList = [{type: "weapon/cheese.png", bull : "weapon/cheese.png"},
+  {type: "weapon/cheese.png", bull : "weapon/cheese.png"},
+  {type: "weapon/pizza weapon.png", bull : "weapon/pizza weapon.png"},
+  {type: "weapon/gun.png", bull : "weapon/bullet.png"},
+  {type: "weapon/banana.png", bull : "weapon/bananaBullet.png"}
+];
+
+let weaponData = [];
 
 let map = [];
 const GRIDSIZE = 32;
@@ -85,7 +94,9 @@ function preload(){
     campaignMapData.push(mapy);
   }
   
+  // for (){
 
+  // }
   playerImg = loadImage("character/baguette.png");
 
   doorDashCrate = loadImage("character/doordash.png")

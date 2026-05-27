@@ -93,6 +93,7 @@ class PlayerBaguette{
       this.health = 100;
 
       this.y = -1500;
+      this.x = 1500;
       if (this.lives === 0){
         console.log("you lose");
       }
@@ -381,6 +382,8 @@ class Cheese extends Weapon{
 // honey bottle genade / less friction
 
 // fries shotgun
+
+// banana sniper
 
 
 //------------------------------------------------Map---------------------------------------------------------
