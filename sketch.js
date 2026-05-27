@@ -202,11 +202,13 @@ function switchPhrase(name){
   }
   else if (name === "battle"){
     gamePhrase = "battle";
+    
     player = new PlayerBaguette();
     player.currentWeapon = new Pistol();
     
-    
     bot = new BotPlayer();
+    bot.currentWeapon = new Pistol();
+
     everyMovingThing.push(bot);
     everyMovingThing.push(player);
     

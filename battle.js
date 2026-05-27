@@ -1,10 +1,10 @@
 
 function fightStart(){
-  console.log();
+  // console.log(player.xVelocity);
   if (!map){
     return;
   }
-  // console.log(map);
+  everyMovingThing = [player, bot];
   push();
   generateSurrounding();
   pop();
@@ -17,16 +17,18 @@ function fightStart(){
   
   bot.searchPlatform();
   bot.updatePlayer();
-  // bot.loadPlayer();
+  bot.loseMomentum();
+
+  displayScreen();
 
   updateCrate();
 
   push();
   stroke("black");
   pop();
-  if (abosluteFreeze !== 0){
-    player.y = abosluteFreeze;
-  }
+  // if (abosluteFreeze !== 0){
+  //   player.y = abosluteFreeze;
+  // }
 }
 
 //-----------------------------------------------Class--------------------------------------------------------------
@@ -35,17 +37,18 @@ class PlayerBaguette{
   constructor(){
     // this.opponent = [];
     this.direction = true;
+    this.name = "player";
 
     this.currentWeapon = null;
     // this.bulletList = [];
-    this.health = 5;
-
+    this.lives = 5;
+    this.health = 100;
 
     this.playerXgrid = 0;
     this.playerYgrid = 0;
 
     this.x = 1500;
-    this.y = -2000;
+    this.y = -1500;
     this.xPosOnScreen = 0;
     this.yPosOnScreen = 0;
 
@@ -55,8 +58,10 @@ class PlayerBaguette{
     this.jumpspeed = -20;
     this.speed = 2;
     this.maxSpeed = 10;
-    this.maxFallSpeed = 20;
+    this.maxFallSpeed = 10;
     this.doubleJump = false;
+
+    this.lastTimeShot = 0;
 
     this.friction = 5;
     
@@ -80,20 +85,31 @@ class PlayerBaguette{
     pop();
   }
 
+  deadOrNot(){
+    if (this.y > 2900 || this.health <= 0){
+      
+      this.yVelocity = 0;
+      this.lives -= 1;
+      this.health = 100;
+
+      this.y = -1500;
+      if (this.lives === 0){
+        console.log("you lose");
+      }
+    }
+  }
+
+  gotHit(damage){
+    this.health -= damage;
+  }
+
   // Player y/gravity
   updatePlayer(){
     this.playerYupdate();
 
     this.playerXupdate();
 
-    if (this.y > 2900){
-      this.y = -2000;
-      this.yVelocity = 0;
-      this.health -= 1;
-      if (this.health === 0){
-        console.log("you lose");
-      }
-    }
+    this.deadOrNot();
   }
   playerJump(){
     if (this.touchGround()){
@@ -140,7 +156,7 @@ class PlayerBaguette{
     if (this.y + this.yVelocity >= this.platformY ){
       this.y = this.platformY -1;
       this.yVelocity = 0;
-      this.doubleJump = false;
+      this.doubleJump = true;
     }
     else{
       this.y += this.yVelocity;
@@ -148,9 +164,8 @@ class PlayerBaguette{
     }
   }
   doubleJumping(){
-    this.yVelocity = structuredClone(this.jumpspeed);
+    this.yVelocity = structuredClone(this.jumpspeed + 3);
     this.doubleJump = false;
-    console.log("ha");
   }
 
   // Player x/friction/ wall collision
@@ -175,7 +190,7 @@ class PlayerBaguette{
     else if (this.xVelocity > 0){
       this.xVelocity -= this.speed /this.friction;
     }
-    if (this.xVelocity < 0.05 && this.xVelocity > -0.05 ) {
+    if (this.xVelocity <= 0.05 && this.xVelocity >= -0.05 ) {
       this.xVelocity = 0;
     }
   }
@@ -217,12 +232,28 @@ class PlayerBaguette{
 
   // Shooting
   shoot(){
-    let direc = 1;
-    if (this.direction){
-      direc = -1;
+    if (this.lastTimeShot + this.currentWeapon.frequency < millis()){
+      let direc = 1;
+      if (this.direction){
+        direc = -1;
+      }
+
+      let newBullet = new Bullet(this.x + 20*direc, this.y - 40, this.currentWeapon.bullet, this.currentWeapon.range, this.currentWeapon.knockBack, this.currentWeapon.bulletSpeed * direc, this.currentWeapon.damage);
+      bulletList.push(newBullet);
+      this.currentWeapon.ammo -= 1;
+      if (this.currentWeapon.ammo === 0){
+        this.currentWeapon = new Pistol();
+      }
+      if (this.direction){
+        this.x += 2;
+      }
+      else{
+        this.x -= 2;
+      }
+
+      this.lastTimeShot = millis();
     }
-    let newBullet = new Bullet(this.x, this.y, this.currentWeapon.bullet, this.currentWeapon.range, this.currentWeapon.knockBack, this.currentWeapon.bulletSpeed * direc);
-    bulletList.push(newBullet);
+
   }
 
 
@@ -231,13 +262,9 @@ class PlayerBaguette{
 class BotPlayer extends PlayerBaguette{
   constructor(){
     super();
+    this.name = "bot"
   }
-  loadPlayer(){
-    push();
-    imageMode(CENTER);
-    image(playerImg, this.x, this.y -30, 75,75 );
-    pop();
-  }
+  
 }
 
 class Crate extends PlayerBaguette{
@@ -266,7 +293,6 @@ function playerMoving(){
   // }
 
   if (keyIsDown(32)){
-    console.log("shoot");
     player.shoot();
   }
 }
@@ -274,13 +300,14 @@ function playerMoving(){
 //------------------------------------------------ Weapon ----------------------------------------------------
 
 class Bullet{
-  constructor(x, y, type, range, knockBack, speed, owner){
+  constructor(x, y, type, range, knockBack, speed, damage){
     this.x = x;
     this.y = y;
     this.type = type;
     this.range = range;
     this.knockBack = knockBack;
     this.speed = speed;
+    this.damage = damage;
   }
 }
 
@@ -293,9 +320,11 @@ class Weapon{
     this.range = 0;
     this.knockBack = 0;
     this.frequency = 0;
-    this.lastTimeShot = 0;
+    
     this.gunSpeed = 1;
     this.bulletSpeed = 10;
+    this.ammo = 0;
+    this.damage = 0;
   }
   displayWeapon(x,y){
     push();
@@ -313,6 +342,9 @@ class Pistol extends Weapon{
     this.range = 1000;
     this.knockBack = 10;
     this.frequency = 700;
+    this.ammo = Infinity;
+    this.bulletSpeed = 15;
+    this.damage = 5;
   }
 }
 
@@ -321,9 +353,12 @@ class Pizza extends Weapon{
     super();
     this.name = pizza;
     this.bullet = pizza;
-    this.range = 500;
+    this.range = 300;
     this.knockBack = 20;
     this.frequency = 1000;
+    this.ammo = 7;
+    this.bulletSpeed = 40;
+    this.damage = 20;
   }
 }
 
@@ -335,6 +370,9 @@ class Cheese extends Weapon{
     this.range = 1000;
     this.knockBack = 80;
     this.frequency = 100;
+    this.ammo = 50;
+    this.gunSpeed = 50;
+    this.damage = 3;
   }
 }
 
@@ -344,13 +382,15 @@ class Cheese extends Weapon{
 
 // fries shotgun
 
-// 
 
 //------------------------------------------------Map---------------------------------------------------------
 
 function generateSurrounding() {
   player.playerXgrid = floor(player.x / REALGRIDSIZE);
   player.playerYgrid = floor(player.y / REALGRIDSIZE);
+
+  bot.playerXgrid = floor(bot.x / REALGRIDSIZE);
+  bot.playerYgrid = floor(bot.y / REALGRIDSIZE);
 
   let whereInGridx = player.x - player.playerXgrid * REALGRIDSIZE;
   let whereInGridy = player.y - player.playerYgrid * REALGRIDSIZE;
@@ -411,15 +451,17 @@ function generateSurrounding() {
           pop();
         }
       }
-
-      displayBot(x, y, cordX, cordY);
+      let BotPosX = (floor(bot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bot.x % REALGRIDSIZE;
+      let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
+      displayBot(BotPosX, BotPosY);
 
       displayCrate(x, y, cordX, cordY);
+      
+      // Load Bullet
       
       
     }
   }
-  // Load Bullet
   for (let i = bulletList.length - 1; i >= 0; i--) {
     let shot = bulletList[i];
     shot.x += shot.speed; 
@@ -432,10 +474,20 @@ function generateSurrounding() {
     pop();
 
     shot.range -= Math.abs(shot.speed);
+
+    for (let thing of everyMovingThing){
+      if (shot.x > thing.x - 20 && shot.x < thing.x + 20 && shot.y < thing.y && shot.y > thing.y - 50 ){
+        bulletList.splice(i, 1);
+        thing.xVelocity += shot.speed;
+        thing.gotHit(shot.damage);
+      }
+    }
+
     if (shot.range <= 0) {
       bulletList.splice(i, 1);
     }
   }
+  
 }
 
 //------------------------------------------------Crate---------------------------------------------------------------
@@ -473,7 +525,6 @@ function updateCrate(){
         player.currentWeapon = new Cheese();
       }
 
-      console.log(randomWeapon);
       everyCrate.splice(everyCrate.indexOf(item), 1);
       
     }
@@ -500,18 +551,44 @@ function displayCrate(x, y, cordX, cordY){
 
 //----------------------------------------------------- Bot ------------------------------------------------------
 
-function displayBot(x, y, cordX, cordY){
-  bot.playerXgrid = floor(bot.x / REALGRIDSIZE);
-  bot.playerYgrid = floor(bot.y / REALGRIDSIZE);
+function displayBot(PosX, PosY){
+  push();
 
-  if (x === bot.playerXgrid && y === bot.playerYgrid){
+  let x = PosX;
+  if (!bot.direction){
+    scale(-1,1);
+    x = -x;
+  }
+
+  imageMode(CENTER);
+  image(playerImg, x, PosY -30, 75,75 );
+  if (bot.currentWeapon !== null){
+    bot.currentWeapon.displayWeapon(x, PosY -30);
+  }
+  pop();
+}
+
+// ---------------------------------------------------Health Screen ------------------------------------------------
+
+function displayScreen(){
+  let screenSection = windowWidth / everyMovingThing.length;
+  for (let thing = 0; thing < everyMovingThing.length; thing ++){
     push();
-    fill("red");
-    square(cordX, cordY, REALGRIDSIZE);
+    let offset = screenSection * thing;
+    stroke("black");
+    rect(screenSection / 3 + offset, height, screenSection / 3, -100);
+
+    text("Lives: " + everyMovingThing[thing].lives ,screenSection / 3 + offset + 10, height - 20);
+    text("Health: " + everyMovingThing[thing].health ,screenSection / 3 + offset + 10, height - 35);
+    text("Ammo Left: " + everyMovingThing[thing].currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 50);
+
+    textSize(30);
+    textAlign(CENTER);
+    text(everyMovingThing[thing].name ,screenSection / 3 + offset + (screenSection / 6), height - 75);
+
     pop();
   }
 }
-
 
 
 
