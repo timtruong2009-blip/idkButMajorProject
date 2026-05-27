@@ -222,6 +222,8 @@ function switchPhrase(name){
 
     everyMovingThing.push(bot);
     everyMovingThing.push(player);
+
+    crateMillis = millis();
     
   }
 

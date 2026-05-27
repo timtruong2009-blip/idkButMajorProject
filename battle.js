@@ -1,6 +1,6 @@
 
 function fightStart(){
-  // console.log(player.xVelocity);
+  // console.log(player.playerYgrid);
   if (!map){
     return;
   }
@@ -49,8 +49,8 @@ class PlayerBaguette{
 
     this.x = 1500;
     this.y = -1500;
-    this.xPosOnScreen = 0;
-    this.yPosOnScreen = 0;
+    this.xPosOnScreen = width /2;
+    this.yPosOnScreen = height /2;
 
     this.yVelocity = 0;
     this.xVelocity = 0;
@@ -76,12 +76,19 @@ class PlayerBaguette{
       scale(-1,1);
       x = -x;
     }
-
     imageMode(CENTER);
-    image(playerImg, x, this.yPosOnScreen -30, 75,75 );
-    if (this.currentWeapon !== null){
-      this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
+    if (this.yPosOnScreen !== 0){
+      image(playerImg, x, this.yPosOnScreen -30, 75,75 );
+      if (this.currentWeapon !== null){
+        this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
+      }
     }
+    // else{
+    //   image(playerImg, width /2, height, 75,75 );
+    //   if (this.currentWeapon !== null){
+    //     this.currentWeapon.displayWeapon(width /2, height);
+    //   }
+    // }
     pop();
   }
 
@@ -256,14 +263,12 @@ class PlayerBaguette{
     }
 
   }
-
-
 }
 
 class BotPlayer extends PlayerBaguette{
   constructor(){
     super();
-    this.name = "bot"
+    this.name = "bot";
   }
   
 }
@@ -407,6 +412,7 @@ function generateSurrounding() {
   let biggestX = player.playerXgrid + Math.ceil(gridOnScreenW/2) +1;
   let biggestY = player.playerYgrid + Math.ceil(gridOnScreenH/2) +2;
 
+  
   for (let y = smallestY; y < biggestY; y ++){
     for (let x = smallestX; x < biggestX; x ++){
       let cordX = (x - smallestX) * REALGRIDSIZE - whereInGridx;
@@ -454,41 +460,35 @@ function generateSurrounding() {
           pop();
         }
       }
-      let BotPosX = (floor(bot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bot.x % REALGRIDSIZE;
-      let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
-      displayBot(BotPosX, BotPosY);
-
-      for (let item of everyCrate){
-        item.playerXgrid = floor(item.x / REALGRIDSIZE);
-        item.playerYgrid = floor(item.y / REALGRIDSIZE);
-
-        let CratePosX = (floor(item.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + item.x % REALGRIDSIZE;
-        let CratePosY = (floor(item.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + item.y % REALGRIDSIZE;
-        displayCrate(CratePosX, CratePosY);
-        
-      }
-      
-      
-      // Load Bullet
-      
-      
     }
   }
+  let BotPosX = (floor(bot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bot.x % REALGRIDSIZE;
+  let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
+  displayBot(BotPosX, BotPosY);
+
+  for (let i = everyCrate.length - 1; i >= 0; i--) {
+    let item = everyCrate[i];
+    item.playerXgrid = floor(item.x / REALGRIDSIZE);
+    item.playerYgrid = floor(item.y / REALGRIDSIZE);
+
+    let CratePosX = (floor(item.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + item.x % REALGRIDSIZE;
+    let CratePosY = (floor(item.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + item.y % REALGRIDSIZE;
+    displayCrate(CratePosX, CratePosY);
+    
+  }
+
   for (let i = bulletList.length - 1; i >= 0; i--) {
     let shot = bulletList[i];
-    shot.x += shot.speed; 
     let bulletScreenX = (floor(shot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + shot.x % REALGRIDSIZE;
     let bulletScreenY = (floor(shot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + shot.y % REALGRIDSIZE;
 
-    push();
-    imageMode(CENTER);
-    image(shot.type, bulletScreenX, bulletScreenY, 100, 50);
-    pop();
+    displayBullet(bulletScreenX, bulletScreenY, shot.type);
 
+    shot.x += shot.speed; 
     shot.range -= Math.abs(shot.speed);
 
     for (let thing of everyMovingThing){
-      if (shot.x > thing.x - 20 && shot.x < thing.x + 20 && shot.y < thing.y && shot.y > thing.y - 50 ){
+      if (shot.x > thing.x - 20 && shot.x < thing.x + 20 && shot.y < thing.y && shot.y > thing.y - 60 ){
         bulletList.splice(i, 1);
         thing.xVelocity += shot.speed;
         thing.gotHit(shot.damage);
@@ -541,14 +541,17 @@ function updateCrate(){
       everyCrate.splice(everyCrate.indexOf(item), 1);
       
     }
+    else if(item.playerYgrid * REALGRIDSIZE > 2500){
+      everyCrate.splice(everyCrate.indexOf(item), 1);
+    }
   }
 }
 
 function displayCrate(CratePosX, CratePosY){
   push();
   imageMode(CENTER);
-  image(doorDashCrate, CratePosX , CratePosY);
-
+  image(doorDashCrate, CratePosX + 20 , CratePosY - 5, 50, 50);
+  // circle(CratePosX, CratePosY, 20);
   pop();
 }
 
@@ -593,7 +596,14 @@ function displayScreen(){
   }
 }
 
+function displayBullet(bulletScreenX, bulletScreenY, img){
+  push();
+  imageMode(CENTER);
+  image(img, bulletScreenX, bulletScreenY, 100, 50);
+  pop();
 
+  
+}
 
 
 
