@@ -18,6 +18,7 @@ function fightStart(){
   bot.searchPlatform();
   bot.updatePlayer();
   bot.loseMomentum();
+  bot.botAiManager();
 
   displayScreen();
 
@@ -83,12 +84,6 @@ class PlayerBaguette{
         this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
       }
     }
-    // else{
-    //   image(playerImg, width /2, height, 75,75 );
-    //   if (this.currentWeapon !== null){
-    //     this.currentWeapon.displayWeapon(width /2, height);
-    //   }
-    // }
     pop();
   }
 
@@ -106,7 +101,6 @@ class PlayerBaguette{
       }
     }
   }
-
   gotHit(damage){
     this.health -= damage;
   }
@@ -265,13 +259,7 @@ class PlayerBaguette{
   }
 }
 
-class BotPlayer extends PlayerBaguette{
-  constructor(){
-    super();
-    this.name = "bot";
-  }
-  
-}
+
 
 class Crate extends PlayerBaguette{
   constructor(x){
@@ -518,32 +506,34 @@ function updateCrate(){
     item.searchPlatform();
     item.updatePlayer();
     
-
-    if (item.playerXgrid === player.playerXgrid && item.playerYgrid === player.playerYgrid){
-      let randomWeapon = allWeapon[floor(random(allWeapon.length))];
-
-      if (randomWeapon === "pistol"){
-        player.currentWeapon = new Pistol();
+    for (let people of everyMovingThing){
+      if (item.playerXgrid === people.playerXgrid && item.playerYgrid === people.playerYgrid){
+        let randomWeapon = allWeapon[floor(random(allWeapon.length))];
+  
+        if (randomWeapon === "pistol"){
+          people.currentWeapon = new Pistol();
+        }
+  
+        else if (randomWeapon === "pizza"){
+          people.currentWeapon = new Pizza();
+        }
+  
+        else if (randomWeapon === "cheese"){
+          people.currentWeapon = new Cheese();
+        }
+  
+        else if (randomWeapon === "cheese"){
+          people.currentWeapon = new Cheese();
+        }
+  
+        everyCrate.splice(everyCrate.indexOf(item), 1);
+        
       }
-
-      else if (randomWeapon === "pizza"){
-        player.currentWeapon = new Pizza();
+      else if(item.playerYgrid * REALGRIDSIZE > 2500){
+        everyCrate.splice(everyCrate.indexOf(item), 1);
       }
-
-      else if (randomWeapon === "cheese"){
-        player.currentWeapon = new Cheese();
-      }
-
-      else if (randomWeapon === "cheese"){
-        player.currentWeapon = new Cheese();
-      }
-
-      everyCrate.splice(everyCrate.indexOf(item), 1);
-      
     }
-    else if(item.playerYgrid * REALGRIDSIZE > 2500){
-      everyCrate.splice(everyCrate.indexOf(item), 1);
-    }
+    
   }
 }
 
@@ -572,6 +562,54 @@ function displayBot(PosX, PosY){
     bot.currentWeapon.displayWeapon(x, PosY -30);
   }
   pop();
+}
+
+
+class BotPlayer extends PlayerBaguette{
+  constructor(){
+    super();
+    this.name = "bot";
+    this.state = "idle";
+  }
+
+  botAiManager(){
+    if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
+      return;
+    }
+    this.daBotbrain();
+    if (this.state === "idle"){
+      this.idle();
+    }
+  }
+
+  daBotbrain(){
+    let XdistanceFromPLayer = this.x - player.x;
+    let YdistanceFromPLayer = this.y - player.y;
+
+    if (){
+
+    }
+  }
+
+  idle(){
+    if (this.touchGround){
+      let idk = floor(random(2.99));
+      if (idk === 1 ){
+        if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid -1])){
+          this.playerMove(1);
+        }
+      }
+      if (idk === 2 ){
+        if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid +1])){
+          this.playerMove(-1);
+        }
+      }
+      if (idk === 0 ){
+        this.playerJump();
+      }
+    }
+  }
+  
 }
 
 // ---------------------------------------------------Health Screen ------------------------------------------------
