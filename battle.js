@@ -458,7 +458,16 @@ function generateSurrounding() {
       let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
       displayBot(BotPosX, BotPosY);
 
-      displayCrate(x, y, cordX, cordY);
+      for (let item of everyCrate){
+        item.playerXgrid = floor(item.x / REALGRIDSIZE);
+        item.playerYgrid = floor(item.y / REALGRIDSIZE);
+
+        let CratePosX = (floor(item.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + item.x % REALGRIDSIZE;
+        let CratePosY = (floor(item.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + item.y % REALGRIDSIZE;
+        displayCrate(CratePosX, CratePosY);
+        
+      }
+      
       
       // Load Bullet
       
@@ -508,6 +517,7 @@ function updateCrate(){
   for (let item of everyCrate){
     item.searchPlatform();
     item.updatePlayer();
+    
 
     if (item.playerXgrid === player.playerXgrid && item.playerYgrid === player.playerYgrid){
       let randomWeapon = allWeapon[floor(random(allWeapon.length))];
@@ -534,22 +544,12 @@ function updateCrate(){
   }
 }
 
-function displayCrate(x, y, cordX, cordY){
-  for (let item of everyCrate){
-    item.playerXgrid =  floor(item.x / REALGRIDSIZE);
-    item.playerYgrid = floor(item.y / REALGRIDSIZE);
-    if (x === item.playerXgrid && y === item.playerYgrid){
-      push();
-      fill("blue");
-      square(cordX, cordY, REALGRIDSIZE);
-      
-      // circle(cordX + whereInGridx, cordY + whereInGridy,10);
-                                                  
-      // player.xPosOnScreen = cordX + whereInGridx;
-      // player.yPosOnScreen = cordY + whereInGridy;
-      pop();
-    }
-  }
+function displayCrate(CratePosX, CratePosY){
+  push();
+  imageMode(CENTER);
+  image(doorDashCrate, CratePosX , CratePosY);
+
+  pop();
 }
 
 //----------------------------------------------------- Bot ------------------------------------------------------

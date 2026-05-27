@@ -37,7 +37,7 @@ let allButton = [];
 let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
 let allCampaignButton = [];
 
-let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json"];
+let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json", "map_list/kevin.json"];
 let campaignMapData = [];
 
 let weaponList = [{type: "weapon/cheese.png", bull : "weapon/cheese.png"},
