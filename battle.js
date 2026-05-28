@@ -1,6 +1,6 @@
 
 function fightStart(){
-  // console.log(player.playerYgrid);
+  console.log(bot.xVelocity);
   if (!map){
     return;
   }
@@ -17,7 +17,7 @@ function fightStart(){
   
   bot.searchPlatform();
   bot.updatePlayer();
-  bot.loseMomentum();
+  
   bot.botAiManager();
 
   displayScreen();
@@ -59,7 +59,7 @@ class PlayerBaguette{
     this.jumpspeed = -20;
     this.speed = 2;
     this.maxSpeed = 10;
-    this.maxFallSpeed = 10;
+    this.maxFallSpeed = 15;
     this.doubleJump = false;
 
     this.lastTimeShot = 0;
@@ -91,6 +91,8 @@ class PlayerBaguette{
     if (this.y > 2900 || this.health <= 0){
       
       this.yVelocity = 0;
+      this.xVelocity = 0;
+
       this.lives -= 1;
       this.health = 100;
 
@@ -334,8 +336,8 @@ class Pistol extends Weapon{
     this.name = pistol;
     this.bullet = gunBullet;
     this.range = 1000;
-    this.knockBack = 10;
-    this.frequency = 700;
+    this.knockBack = 20;
+    this.frequency = 400;
     this.ammo = Infinity;
     this.bulletSpeed = 15;
     this.damage = 5;
@@ -349,7 +351,7 @@ class Pizza extends Weapon{
     this.bullet = pizza;
     this.range = 300;
     this.knockBack = 20;
-    this.frequency = 1000;
+    this.frequency = 400;
     this.ammo = 7;
     this.bulletSpeed = 40;
     this.damage = 20;
@@ -362,7 +364,7 @@ class Cheese extends Weapon{
     this.name = cheese;
     this.bullet = cheese;
     this.range = 1000;
-    this.knockBack = 80;
+    this.knockBack = 10;
     this.frequency = 100;
     this.ammo = 50;
     this.gunSpeed = 50;
@@ -465,6 +467,7 @@ function generateSurrounding() {
     
   }
 
+  // bullet update / load
   for (let i = bulletList.length - 1; i >= 0; i--) {
     let shot = bulletList[i];
     let bulletScreenX = (floor(shot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + shot.x % REALGRIDSIZE;
@@ -478,7 +481,7 @@ function generateSurrounding() {
     for (let thing of everyMovingThing){
       if (shot.x > thing.x - 20 && shot.x < thing.x + 20 && shot.y < thing.y && shot.y > thing.y - 60 ){
         bulletList.splice(i, 1);
-        thing.xVelocity += shot.speed;
+        thing.xVelocity += shot.knockBack * (shot.speed / Math.abs(shot.speed));
         thing.gotHit(shot.damage);
       }
     }
@@ -576,18 +579,36 @@ class BotPlayer extends PlayerBaguette{
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       return;
     }
-    this.daBotbrain();
+    this.state = this.daBotbrain();
     if (this.state === "idle"){
       this.idle();
     }
+    else if (this.state === "left"){
+      this.playerMove(1);
+      this.direction = false;
+    }
+    else if (this.state === "right"){
+      this.playerMove(-1);
+      this.direction = true;
+    }
+    else{
+      bot.loseMomentum();
+    }
+
   }
 
   daBotbrain(){
     let XdistanceFromPLayer = this.x - player.x;
     let YdistanceFromPLayer = this.y - player.y;
 
-    if (){
-
+    if (XdistanceFromPLayer < 0){
+      return "left";
+    }
+    else if (XdistanceFromPLayer > 0){
+      return "right";
+    }
+    else{
+      return "idle";
     }
   }
 
