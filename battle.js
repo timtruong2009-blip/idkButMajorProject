@@ -1,6 +1,6 @@
 
 function fightStart(){
-  console.log(bot.xVelocity);
+  console.log(player.gettingKnockBack);
   if (!map){
     return;
   }
@@ -17,7 +17,6 @@ function fightStart(){
   
   bot.searchPlatform();
   bot.updatePlayer();
-  
   bot.botAiManager();
 
   displayScreen();
@@ -62,6 +61,8 @@ class PlayerBaguette{
     this.maxFallSpeed = 15;
     this.doubleJump = false;
 
+    this.gettingKnockBack = false;
+
     this.lastTimeShot = 0;
 
     this.friction = 5;
@@ -88,7 +89,7 @@ class PlayerBaguette{
   }
 
   deadOrNot(){
-    if (this.y > 2900 || this.health <= 0){
+    if (this.y > 2900 || this.health <= 0 || Math.abs(this.x) > 4000){
       
       this.yVelocity = 0;
       this.xVelocity = 0;
@@ -179,24 +180,43 @@ class PlayerBaguette{
     }
   }
   playerMove(direction){
-    if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
+    if (this.gettingKnockBack && Math.abs(this.xVelocity )> this.maxSpeed){
+      let where = 1;
+      if (this.direction){
+        where = -1;
+      }
+      this.xVelocity += where;
     }
     else{
-      
-      let stuffToAddToVelocity= 0.2 * direction * this.speed;
-      this.xVelocity += stuffToAddToVelocity ;
+      if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
+      }
+      else{
+        
+        let stuffToAddToVelocity= 0.2 * direction * this.speed;
+        this.xVelocity += stuffToAddToVelocity ;
+      }
     }
+    
   }
   loseMomentum(){
-    if (this.xVelocity < 0){
-      this.xVelocity += this.speed / this.friction;
+    if (this.gettingKnockBack){
+      this.xVelocity *= 0.95;
+      if (Math.abs(this.xVelocity) <= this.maxSpeed){
+        this.gettingKnockBack = false;
+      }
     }
-    else if (this.xVelocity > 0){
-      this.xVelocity -= this.speed /this.friction;
+    else{
+      if (this.xVelocity < 0){
+        this.xVelocity += this.speed / this.friction;
+      }
+      else if (this.xVelocity > 0){
+        this.xVelocity -= this.speed /this.friction;
+      }
+      if (this.xVelocity <= 0.05 && this.xVelocity >= -0.05 ) {
+        this.xVelocity = 0;
+      }
     }
-    if (this.xVelocity <= 0.05 && this.xVelocity >= -0.05 ) {
-      this.xVelocity = 0;
-    }
+    
   }
   searchWall(){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
@@ -483,6 +503,7 @@ function generateSurrounding() {
         bulletList.splice(i, 1);
         thing.xVelocity += shot.knockBack * (shot.speed / Math.abs(shot.speed));
         thing.gotHit(shot.damage);
+        thing.gettingKnockBack = true;
       }
     }
 
@@ -583,17 +604,19 @@ class BotPlayer extends PlayerBaguette{
     if (this.state === "idle"){
       this.idle();
     }
-    else if (this.state === "left"){
+    else if (this.state === "right"){
       this.playerMove(1);
       this.direction = false;
     }
-    else if (this.state === "right"){
+    else if (this.state === "left"){
       this.playerMove(-1);
       this.direction = true;
     }
+    
     else{
       bot.loseMomentum();
     }
+    this.shoot();
 
   }
 
@@ -602,10 +625,10 @@ class BotPlayer extends PlayerBaguette{
     let YdistanceFromPLayer = this.y - player.y;
 
     if (XdistanceFromPLayer < 0){
-      return "left";
+      return "right";
     }
     else if (XdistanceFromPLayer > 0){
-      return "right";
+      return "left";
     }
     else{
       return "idle";
@@ -615,17 +638,27 @@ class BotPlayer extends PlayerBaguette{
   idle(){
     if (this.touchGround){
       let idk = floor(random(2.99));
+
       if (idk === 1 ){
         if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid -1])){
           this.playerMove(1);
         }
+        else{
+          this.playerJump();
+        }
       }
-      if (idk === 2 ){
+      else if (idk === 2 ){
         if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid +1])){
           this.playerMove(-1);
         }
+        else{
+          this.playerJump();
+        }
       }
-      if (idk === 0 ){
+      else if (idk === 0 ){
+        this.playerJump();
+      }
+      else{
         this.playerJump();
       }
     }
