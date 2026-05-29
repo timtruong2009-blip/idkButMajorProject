@@ -29,6 +29,7 @@
 
 let startScreen;
 let campaignscreen;
+let customDemo;
 let myFont;
 
 let gamePhrase  = "start";
@@ -79,7 +80,7 @@ let allWeapon = [];
 
 let doorDashCrate;
 let abosluteFreeze = 0;
-const crateSpawnSpeed = 1000;
+const crateSpawnSpeed = 10000;
 let crateMillis = 0;
 
 
@@ -88,6 +89,7 @@ function preload(){
 
   startScreen = loadImage("screen image/Baguette start screen.png");
   campaignscreen = loadImage("screen image/campaignplan.png");
+  customDemo = loadImage("screen image/custom demo screen.png");
 
   for (let item of campaignLevel){
     let mapy = loadJSON(item);
@@ -136,6 +138,9 @@ function draw() {
   if (gamePhrase === "battle"){
     fightStart();
   }
+  if (gamePhrase === "Custom"){
+    customScreen();
+  }
   // s
 }
 
@@ -163,9 +168,10 @@ function keyPressed(){
     gamePhrase = "start";
   }
   if (gamePhrase === "Campaign"){
+
   }
   else if (gamePhrase === "Custom"){
-
+    
   }
   if (gamePhrase === "Setting"){
 
@@ -177,14 +183,10 @@ function keyPressed(){
     if (key === "s"){
       player.moveDown();
     }
-    // if (key === "f"){
-    //   abosluteFreeze = player.platformY;
-    // }
     if (keyCode === 87){
       player.playerJump();
     }
   }
-  
   if (gamePhrase === "Map"){
     if (key === "c"){
       currentBlockColor.currentDisplay = !currentBlockColor.currentDisplay;
@@ -224,11 +226,15 @@ function switchPhrase(name){
     everyMovingThing.push(player);
 
     crateMillis = millis();
-    
   }
 
   else if (name === "Custom"){
     gamePhrase = "Custom";
+    let multiplayerButton = new CustomButton(1, "2 PLAYERS");
+    let trainingMode = new CustomButton(3, "TRAINING");
+
+    allButton = [multiplayerButton, trainingMode];
+
   }
   else if (name === "Setting"){
     gamePhrase = "Setting";

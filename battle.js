@@ -180,12 +180,15 @@ class PlayerBaguette{
     }
   }
   playerMove(direction){
+    // console.log(this.xVelocity);
     if (this.gettingKnockBack && Math.abs(this.xVelocity )> this.maxSpeed){
-      let where = 1;
-      if (this.direction){
-        where = -1;
+      let futureSpeed = this.xVelocity + direction;
+      if (Math.abs(futureSpeed ) > Math.abs(this.xVelocity )){
+
       }
-      this.xVelocity += where;
+      else {
+        this.xVelocity += direction;
+      }
     }
     else{
       if (this.xVelocity + this.speed * direction > this.maxSpeed || this.xVelocity + this.speed * direction < -this.maxSpeed){
@@ -370,7 +373,7 @@ class Pizza extends Weapon{
     this.name = pizza;
     this.bullet = pizza;
     this.range = 300;
-    this.knockBack = 20;
+    this.knockBack = 50;
     this.frequency = 400;
     this.ammo = 7;
     this.bulletSpeed = 40;
@@ -598,6 +601,8 @@ class BotPlayer extends PlayerBaguette{
 
   botAiManager(){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
+      bot.loseMomentum();
+      bot.y -= 10;
       return;
     }
     this.state = this.daBotbrain();
