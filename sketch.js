@@ -80,8 +80,11 @@ let allWeapon = [];
 
 let doorDashCrate;
 let abosluteFreeze = 0;
-const crateSpawnSpeed = 10000;
+let crateSpawnSpeed = 10000;
 let crateMillis = 0;
+
+let allPlayerHealth = 100;
+
 
 
 function preload(){
@@ -166,6 +169,7 @@ function mousePressed(){
 function keyPressed(){
   if (key === "b"){
     gamePhrase = "start";
+    makeButton();
   }
   if (gamePhrase === "Campaign"){
 
@@ -216,21 +220,12 @@ function switchPhrase(name){
   else if (name === "battle"){
     gamePhrase = "battle";
     
-    player = new PlayerBaguette();
-    player.currentWeapon = new Pistol();
-    
-    bot = new BotPlayer();
-    bot.currentWeapon = new Pistol();
-
-    everyMovingThing.push(bot);
-    everyMovingThing.push(player);
-
-    crateMillis = millis();
+    battleSetup(10000, 100);
   }
 
   else if (name === "Custom"){
     gamePhrase = "Custom";
-    let multiplayerButton = new CustomButton(1, "2 PLAYERS");
+    let multiplayerButton = new CustomButton(1, "TWO PLAYERS");
     let trainingMode = new CustomButton(3, "TRAINING");
 
     allButton = [multiplayerButton, trainingMode];
@@ -263,5 +258,19 @@ function makeNewMap(){
   }
 }
 
+function battleSetup(crateSpeed, health){
+  player = new PlayerBaguette(health);
+  player.currentWeapon = new Pistol();
+  
+  bot = new BotPlayer(health);
+  bot.currentWeapon = new Pistol();
+
+  everyMovingThing.push(bot);
+  everyMovingThing.push(player);
+
+  allPlayerHealth = health;
+  crateSpawnSpeed = crateSpeed;
+  crateMillis = millis();
+}
 
 

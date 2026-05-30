@@ -34,7 +34,7 @@ function fightStart(){
 //-----------------------------------------------Class--------------------------------------------------------------
 // make player
 class PlayerBaguette{
-  constructor(){
+  constructor(health){
     // this.opponent = [];
     this.direction = true;
     this.name = "player";
@@ -42,7 +42,7 @@ class PlayerBaguette{
     this.currentWeapon = null;
     // this.bulletList = [];
     this.lives = 5;
-    this.health = 100;
+    this.health = health;
 
     this.playerXgrid = 0;
     this.playerYgrid = 0;
@@ -95,7 +95,7 @@ class PlayerBaguette{
       this.xVelocity = 0;
 
       this.lives -= 1;
-      this.health = 100;
+      this.health = structuredClone(allPlayerHealth);
 
       this.y = -1500;
       this.x = 1500;
@@ -182,12 +182,12 @@ class PlayerBaguette{
   playerMove(direction){
     // console.log(this.xVelocity);
     if (this.gettingKnockBack && Math.abs(this.xVelocity )> this.maxSpeed){
-      let futureSpeed = this.xVelocity + direction;
+      let futureSpeed = this.xVelocity + direction /2;
       if (Math.abs(futureSpeed ) > Math.abs(this.xVelocity )){
 
       }
       else {
-        this.xVelocity += direction;
+        this.xVelocity += direction /2;
       }
     }
     else{
@@ -390,7 +390,7 @@ class Cheese extends Weapon{
     this.knockBack = 10;
     this.frequency = 100;
     this.ammo = 50;
-    this.gunSpeed = 50;
+    this.bulletSpeed = 50;
     this.damage = 3;
   }
 }
@@ -593,8 +593,8 @@ function displayBot(PosX, PosY){
 
 
 class BotPlayer extends PlayerBaguette{
-  constructor(){
-    super();
+  constructor(health){
+    super(health);
     this.name = "bot";
     this.state = "idle";
   }

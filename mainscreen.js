@@ -44,7 +44,7 @@ class Button{
 }
 
 function makeButton(){
-  let allButton = [];
+  allButton = [];
   for (let pos = 2; pos < 7; pos ++){
     let newButton = new Button(pos , buttonName[pos-2]);
     allButton.push(newButton);

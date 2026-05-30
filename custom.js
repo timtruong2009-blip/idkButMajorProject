@@ -1,9 +1,10 @@
 
 function customScreen(){
-  console.log("console.");
   image(customDemo,0,0, windowWidth, windowHeight);
 
-
+  for (let butt of allButton){
+    butt.display();
+  }
 }
 
 class CustomButton{
@@ -22,7 +23,7 @@ class CustomButton{
     fill("black");
     textSize(this.size);
     textFont(myFont);
-    text(this.word,this.x,this.y,);
+    text(this.word,this.x * this.pos,this.y,);
 
     pop();
   }
@@ -38,6 +39,8 @@ class CustomButton{
     pop();
   }
 }
+
+
 
 
 
