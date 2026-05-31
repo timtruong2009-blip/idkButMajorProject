@@ -99,8 +99,9 @@ class PlayerBaguette{
 
       this.y = -1500;
       this.x = 1500;
+      this.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
       if (this.lives === 0){
-        console.log("you lose");
+        gamePhrase = "Dead"
       }
     }
   }
@@ -269,7 +270,7 @@ class PlayerBaguette{
       bulletList.push(newBullet);
       this.currentWeapon.ammo -= 1;
       if (this.currentWeapon.ammo === 0){
-        this.currentWeapon = new Pistol();
+        this.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
       }
       if (this.direction){
         this.x += 2;
@@ -331,9 +332,9 @@ class Bullet{
 }
 
 class Weapon{
-  constructor(){
-    this.name = null;
-    this.bullet = null;
+  constructor(img, bullet){
+    this.name = img;
+    this.bullet = bullet;
     this.bulletList = [];
     
     this.range = 0;
@@ -354,10 +355,8 @@ class Weapon{
 }
 
 class Pistol extends Weapon{
-  constructor(){
-    super();
-    this.name = pistol;
-    this.bullet = gunBullet;
+  constructor(img, bullet){
+    super(img, bullet);
     this.range = 1000;
     this.knockBack = 20;
     this.frequency = 400;
@@ -368,10 +367,8 @@ class Pistol extends Weapon{
 }
 
 class Pizza extends Weapon{
-  constructor(){
-    super();
-    this.name = pizza;
-    this.bullet = pizza;
+  constructor(img, bullet){
+    super(img, bullet);
     this.range = 300;
     this.knockBack = 50;
     this.frequency = 400;
@@ -382,10 +379,8 @@ class Pizza extends Weapon{
 }
 
 class Cheese extends Weapon{
-  constructor(){
-    super();
-    this.name = cheese;
-    this.bullet = cheese;
+  constructor(img, bullet){
+    super(img, bullet);
     this.range = 1000;
     this.knockBack = 10;
     this.frequency = 100;
@@ -395,13 +390,25 @@ class Cheese extends Weapon{
   }
 }
 
-// pizza bommarang
+class Banana extends Weapon{
+  constructor(img, bullet){
+    super(img, bullet);
+    this.range = 1000;
+    this.knockBack = 50;
+    this.frequency = 1500;
+    this.ammo = 10;
+    this.bulletSpeed = 20;
+    this.damage = 25;
+  }
+}
+
+// pizza bommarang (nah)
 
 // honey bottle genade / less friction
 
 // fries shotgun
 
-// banana sniper
+// banana sniper (done)
 
 
 //------------------------------------------------Map---------------------------------------------------------
@@ -535,22 +542,22 @@ function updateCrate(){
     
     for (let people of everyMovingThing){
       if (item.playerXgrid === people.playerXgrid && item.playerYgrid === people.playerYgrid){
-        let randomWeapon = allWeapon[floor(random(allWeapon.length))];
+        let randomWeapon = weaponData[floor(random(weaponData.length))];
   
-        if (randomWeapon === "pistol"){
-          people.currentWeapon = new Pistol();
+        if (randomWeapon.name === "pistol"){
+          people.currentWeapon = new Pistol(randomWeapon.type, randomWeapon.bull);
         }
   
-        else if (randomWeapon === "pizza"){
-          people.currentWeapon = new Pizza();
+        else if (randomWeapon.name === "pizza"){
+          people.currentWeapon = new Pizza(randomWeapon.type, randomWeapon.bull);
         }
   
-        else if (randomWeapon === "cheese"){
-          people.currentWeapon = new Cheese();
+        else if (randomWeapon.name === "cheese"){
+          people.currentWeapon = new Cheese(randomWeapon.type, randomWeapon.bull);
         }
   
-        else if (randomWeapon === "cheese"){
-          people.currentWeapon = new Cheese();
+        else if (randomWeapon.name === "banana"){
+          people.currentWeapon = new Banana(randomWeapon.type, randomWeapon.bull);
         }
   
         everyCrate.splice(everyCrate.indexOf(item), 1);

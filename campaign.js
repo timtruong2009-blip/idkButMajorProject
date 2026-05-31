@@ -72,17 +72,14 @@ class CampaignButton{
 
 }
 
-// Add this function to your script
+
 function loadMap(path) {
-  // Pass 'mapDataReceived' as the callback function
   loadJSON(path, mapDataReceived);
 }
 
-// This runs ONLY when the file is finished loading
 function mapDataReceived(data) {
-  
   map = data.mappy; 
-  print(data);
   switchPhrase("battle");
+  battleSetup(10000, 100, "bot");
 }
 

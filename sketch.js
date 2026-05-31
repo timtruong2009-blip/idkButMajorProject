@@ -34,18 +34,18 @@ let myFont;
 
 let gamePhrase  = "start";
 let allButton = [];
+let sliderButton = [];
 
-let buttonName = ["Campaign", "Custom","Setting", "Zombie", "Map"];
+let buttonName = ["Campaign", "Custom","Guide", "Zombie", "Map"];
 let allCampaignButton = [];
 
 let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json", "map_list/kevin.json", "map_list/betaTest.json"];
 let campaignMapData = [];
 
-let weaponList = [{type: "weapon/cheese.png", bull : "weapon/cheese.png"},
-  {type: "weapon/cheese.png", bull : "weapon/cheese.png"},
-  {type: "weapon/pizza weapon.png", bull : "weapon/pizza weapon.png"},
-  {type: "weapon/gun.png", bull : "weapon/bullet.png"},
-  {type: "weapon/banana.png", bull : "weapon/bananaBullet.png"}
+let weaponList = [{type: "weapon/cheese.png", bull : "weapon/cheese.png", name: "cheese"},
+  {type: "weapon/pizza weapon.png", bull : "weapon/pizza weapon.png", name: "pizza"},
+  {type: "weapon/gun.png", bull : "weapon/bullet.png", name: "pistol"},
+  {type: "weapon/banana.png", bull : "weapon/bananaBullet.png", name: "banana"}
 ];
 
 let weaponData = [];
@@ -62,6 +62,8 @@ let deathY = 3000;
 let currentBlockColor;
 
 let player;
+let player2;
+
 let playerImg;
 let bot;
 
@@ -106,16 +108,25 @@ function preload(){
 
   doorDashCrate = loadImage("character/doordash.png")
 
-  cheese = loadImage("weapon/cheese.png");
-  allWeapon.push("cheese");
+  for (let item of weaponList){
+    let weap = loadImage(item.type);
+    let bullet = weap;
+    if (item.bull !== item.type){
+      bullet = loadImage(item.bull);
+    }
+    weaponData.push({type: weap, bull: bullet, name: item.name} );
+  }
 
-  pizza = loadImage("weapon/pizza weapon.png");
-  allWeapon.push("pizza");
+  // cheese = loadImage("weapon/cheese.png");
+  // allWeapon.push("cheese");
 
-  pistol = loadImage("weapon/gun.png");
-  allWeapon.push("pistol");
+  // pizza = loadImage("weapon/pizza weapon.png");
+  // allWeapon.push("pizza");
+
+  // pistol = loadImage("weapon/gun.png");
+  // allWeapon.push("pistol");
   
-  gunBullet = loadImage("weapon/bullet.png");
+  // gunBullet = loadImage("weapon/bullet.png");
 
 }
 
@@ -144,6 +155,9 @@ function draw() {
   if (gamePhrase === "Custom"){
     customScreen();
   }
+  if (gamePhrase === "Dead"){
+    console.log("dead");
+  }
   // s
 }
 
@@ -170,6 +184,10 @@ function keyPressed(){
   if (key === "b"){
     gamePhrase = "start";
     makeButton();
+    for(let slide of sliderButton){
+      slide.end();
+    }
+    allCampaignButton = [];
   }
   if (gamePhrase === "Campaign"){
 
@@ -219,20 +237,22 @@ function switchPhrase(name){
   }
   else if (name === "battle"){
     gamePhrase = "battle";
-    
-    battleSetup(10000, 100);
   }
 
   else if (name === "Custom"){
     gamePhrase = "Custom";
     let multiplayerButton = new CustomButton(1, "TWO PLAYERS");
-    let trainingMode = new CustomButton(3, "TRAINING");
-
+    let trainingMode = new CustomButton(3, "TRAINING MODE");
     allButton = [multiplayerButton, trainingMode];
 
+    let healthSlider = new CustomSlider("Start Health", 50,1, 20, 1);
+    let crateSlider = new CustomSlider("Crate Time", 100, 1000, 100000, 1000);
+
+    sliderButton = [healthSlider, crateSlider];
+
   }
-  else if (name === "Setting"){
-    gamePhrase = "Setting";
+  else if (name === "Guide"){
+    gamePhrase = "Guide";
   }
   else if (name === "Zombie"){
     gamePhrase = "Zombie";
@@ -258,13 +278,16 @@ function makeNewMap(){
   }
 }
 
-function battleSetup(crateSpeed, health){
+function battleSetup(crateSpeed, health, opponent){
   player = new PlayerBaguette(health);
-  player.currentWeapon = new Pistol();
-  
-  bot = new BotPlayer(health);
-  bot.currentWeapon = new Pistol();
+  player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
 
+  bot = new BotPlayer(health);
+  bot.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
+  // if (opponent === "bot"){
+
+  // }
+  
   everyMovingThing.push(bot);
   everyMovingThing.push(player);
 
