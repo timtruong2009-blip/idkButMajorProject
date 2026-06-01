@@ -65,7 +65,9 @@ let player;
 let player2;
 
 let playerImg;
+
 let bot;
+let botImg;
 
 const GRAVITY = 1;
 
@@ -105,6 +107,7 @@ function preload(){
 
   // }
   playerImg = loadImage("character/baguette.png");
+  botImg = loadImage("character/baguetteBot.png");
 
   doorDashCrate = loadImage("character/doordash.png")
 

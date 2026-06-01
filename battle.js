@@ -1,6 +1,5 @@
 
 function fightStart(){
-  console.log(player.gettingKnockBack);
   if (!map){
     return;
   }
@@ -23,9 +22,9 @@ function fightStart(){
 
   updateCrate();
 
-  push();
-  stroke("black");
-  pop();
+  // push();
+  // stroke("black");
+  // pop();
   // if (abosluteFreeze !== 0){
   //   player.y = abosluteFreeze;
   // }
@@ -38,6 +37,7 @@ class PlayerBaguette{
     // this.opponent = [];
     this.direction = true;
     this.name = "player";
+    this.imageUsed = playerImg;
 
     this.currentWeapon = null;
     // this.bulletList = [];
@@ -80,7 +80,7 @@ class PlayerBaguette{
     }
     imageMode(CENTER);
     if (this.yPosOnScreen !== 0){
-      image(playerImg, x, this.yPosOnScreen -30, 75,75 );
+      image(this.imageUsed, x, this.yPosOnScreen -30, 75,75 );
       if (this.currentWeapon !== null){
         this.currentWeapon.displayWeapon(x, this.yPosOnScreen -30);
       }
@@ -591,7 +591,7 @@ function displayBot(PosX, PosY){
   }
 
   imageMode(CENTER);
-  image(playerImg, x, PosY -30, 75,75 );
+  image(bot.imageUsed, x, PosY -30, 75,75 );
   if (bot.currentWeapon !== null){
     bot.currentWeapon.displayWeapon(x, PosY -30);
   }
@@ -602,6 +602,7 @@ function displayBot(PosX, PosY){
 class BotPlayer extends PlayerBaguette{
   constructor(health){
     super(health);
+    this.imageUsed = botImg;
     this.name = "bot";
     this.state = "idle";
   }
@@ -609,7 +610,7 @@ class BotPlayer extends PlayerBaguette{
   botAiManager(){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       bot.loseMomentum();
-      bot.y -= 10;
+      bot.y -= 20;
       return;
     }
     this.state = this.daBotbrain();
