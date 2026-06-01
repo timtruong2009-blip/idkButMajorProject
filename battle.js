@@ -610,7 +610,7 @@ class BotPlayer extends PlayerBaguette{
   botAiManager(){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       bot.loseMomentum();
-      bot.y -= 20;
+      bot.y += 20;
       return;
     }
     this.state = this.daBotbrain();
