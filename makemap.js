@@ -14,9 +14,7 @@ function makingMapScreen(){
     currentBlockColor.display();
   }
   else{
-    currentBlockColor.rc.hide();
-    currentBlockColor.gc.hide();
-    currentBlockColor.bc.hide();
+    currentBlockColor.end();
   }
 }
 
@@ -80,7 +78,11 @@ class CurrentBlockColor{
     this.gValue = this.gc.value();
     this.bValue = this.bc.value();
   }
-
+  end(){
+    this.rc.hide();
+    this.gc.hide();
+    this.bc.hide();
+  }
 }
 
 

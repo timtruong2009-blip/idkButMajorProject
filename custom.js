@@ -8,7 +8,7 @@ function customScreen(){
       butt.showHighlight();
     }
     else{
-      butt.color = "black"
+      butt.color = "black";
     }
   }
   for (let slide of sliderButton){
@@ -30,7 +30,7 @@ class CustomButton{
     push();
     textAlign(CENTER);
 
-    fill(this.color)
+    fill(this.color);
     textSize(this.size);
     textFont(myFont);
     text(this.word,this.x * this.pos,this.y,);
@@ -62,7 +62,7 @@ class CustomSlider{
     this.slider.show();
     push();
     textSize(50);
-    textFont(myFont)
+    textFont(myFont);
     text(this.name, 100, windowHeight - this.y);
 
     textFont("Arial");

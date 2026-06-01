@@ -33,7 +33,7 @@ function fightStart(){
 //-----------------------------------------------Class--------------------------------------------------------------
 // make player
 class PlayerBaguette{
-  constructor(health){
+  constructor(health, lives){
     // this.opponent = [];
     this.direction = true;
     this.name = "player";
@@ -41,8 +41,19 @@ class PlayerBaguette{
 
     this.currentWeapon = null;
     // this.bulletList = [];
-    this.lives = 5;
-    this.health = health;
+    if (lives === 20){
+      this.lives = Infinity;
+    }
+    else{
+      this.lives = lives;
+    }
+
+    if (health === 1001){
+      this.health = Infinity;
+    }
+    else{
+      this.health = health;
+    }
 
     this.playerXgrid = 0;
     this.playerYgrid = 0;
@@ -94,14 +105,17 @@ class PlayerBaguette{
       this.yVelocity = 0;
       this.xVelocity = 0;
 
-      this.lives -= 1;
+      if ( !this.lives === Infinity){
+        this.lives -= 1;
+      }
+      
       this.health = structuredClone(allPlayerHealth);
 
       this.y = -1500;
       this.x = 1500;
       this.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
-      if (this.lives === 0){
-        gamePhrase = "Dead"
+      if (this.lives < 0){
+        gamePhrase = "Dead";
       }
     }
   }
@@ -600,8 +614,8 @@ function displayBot(PosX, PosY){
 
 
 class BotPlayer extends PlayerBaguette{
-  constructor(health){
-    super(health);
+  constructor(health, lives){
+    super(health, lives);
     this.imageUsed = botImg;
     this.name = "bot";
     this.state = "idle";

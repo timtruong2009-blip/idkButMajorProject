@@ -88,6 +88,7 @@ let crateSpawnSpeed = 10000;
 let crateMillis = 0;
 
 let allPlayerHealth = 100;
+let allPlayerlives = 5;
 
 
 
@@ -109,7 +110,7 @@ function preload(){
   playerImg = loadImage("character/baguette.png");
   botImg = loadImage("character/baguetteBot.png");
 
-  doorDashCrate = loadImage("character/doordash.png")
+  doorDashCrate = loadImage("character/doordash.png");
 
   for (let item of weaponList){
     let weap = loadImage(item.type);
@@ -138,6 +139,7 @@ function setup() {
   noStroke();
   noSmooth();
   makeButton();
+  makeNewMap();
 }
 
 function draw() {
@@ -172,8 +174,10 @@ function mousePressed(){
       }
     }
   }
+
   else if (gamePhrase === "Map"){
   }
+
   else if (gamePhrase === "Campaign"){
     for (let num = 0; num < allCampaignButton.length; num ++){
       if (allCampaignButton[num].hover()){
@@ -181,16 +185,23 @@ function mousePressed(){
       }
     }
   }
+
+  else if (gamePhrase === "Custom"){
+    for (let num = 0; num < allButton.length; num ++){
+      if (allButton[num].hover()){
+        battleSetup(sliderButton[0].ammount, sliderButton[1].ammount,sliderButton[2].ammount, "bot");
+        console.log(map);
+        gamePhrase = "battle";
+      }
+    }
+  }
 }
 
 function keyPressed(){
   if (key === "b"){
+    
+    resetButton();
     gamePhrase = "start";
-    makeButton();
-    for(let slide of sliderButton){
-      slide.end();
-    }
-    allCampaignButton = [];
   }
   if (gamePhrase === "Campaign"){
 
@@ -205,6 +216,7 @@ function keyPressed(){
 
   }
   if (gamePhrase === "battle"){
+    resetButton();
     if (key === "s"){
       player.moveDown();
     }
@@ -248,10 +260,11 @@ function switchPhrase(name){
     let trainingMode = new CustomButton(3, "TRAINING MODE");
     allButton = [multiplayerButton, trainingMode];
 
-    let healthSlider = new CustomSlider("Start Health", 50,1, 20, 1);
+    let healthSlider = new CustomSlider("Start Health", 50,1, 1001, 10);
     let crateSlider = new CustomSlider("Crate Time", 100, 1000, 100000, 1000);
+    let lifeSlider = new CustomSlider("Lives", 150, 0, 20, 1);
 
-    sliderButton = [healthSlider, crateSlider];
+    sliderButton = [healthSlider, crateSlider, lifeSlider];
 
   }
   else if (name === "Guide"){
@@ -261,10 +274,10 @@ function switchPhrase(name){
     gamePhrase = "Zombie";
   }
   else if (name === "Map"){
-    push();
-    fill(200);
-    makeNewMap();
-    pop();
+    // push();
+    // fill(200);
+    // makeNewMap();
+    // pop();
     gamePhrase = "Map";
     currentBlockColor = new CurrentBlockColor();
   }
@@ -281,11 +294,12 @@ function makeNewMap(){
   }
 }
 
-function battleSetup(crateSpeed, health, opponent){
-  player = new PlayerBaguette(health);
+function battleSetup(health, crateSpeed, lives, opponent){
+
+  player = new PlayerBaguette(health, lives);
   player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
 
-  bot = new BotPlayer(health);
+  bot = new BotPlayer(health, lives);
   bot.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
   // if (opponent === "bot"){
 
@@ -294,9 +308,25 @@ function battleSetup(crateSpeed, health, opponent){
   everyMovingThing.push(bot);
   everyMovingThing.push(player);
 
-  allPlayerHealth = health;
+  if (health === 1001){
+    allPlayerHealth = Infinity;
+  }
+  else{
+    allPlayerHealth = health;
+  }
   crateSpawnSpeed = crateSpeed;
+  allPlayerlives = lives;
   crateMillis = millis();
 }
 
+function resetButton(){
+  for(let slide of sliderButton){
+    slide.end();
+  }
+  if (currentBlockColor){
+    currentBlockColor.end();
+  }
+  
+  allCampaignButton = [];
+}
 

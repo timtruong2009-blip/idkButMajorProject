@@ -79,7 +79,9 @@ function loadMap(path) {
 
 function mapDataReceived(data) {
   map = data.mappy; 
+  console.log(map);
   switchPhrase("battle");
-  battleSetup(10000, 100, "bot");
+
+  battleSetup(100, 10000,5, "bot");
 }
 
