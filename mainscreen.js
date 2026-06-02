@@ -1,6 +1,6 @@
 
 function mainScreen() {
-  // image(startScreen, 0, 0, windowWidth, windowHeight);
+  image(startScreen, 0, 0, windowWidth, windowHeight);
   for (let button of allButton){
     if (button.hover()){
       button.showHighlight();

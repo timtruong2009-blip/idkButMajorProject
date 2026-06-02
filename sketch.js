@@ -29,6 +29,8 @@
 
 let startScreen;
 let campaignscreen;
+let guideScreen;
+
 let customDemo;
 let myFont;
 
@@ -77,6 +79,7 @@ let pistol;
 let bullet;
 
 let everyMovingThing = [];
+let everyBots = [];
 let bulletList = [];
 let everyCrate = [];
 
@@ -98,6 +101,7 @@ function preload(){
   startScreen = loadImage("screen image/Baguette start screen.png");
   campaignscreen = loadImage("screen image/campaignplan.png");
   customDemo = loadImage("screen image/custom demo screen.png");
+  guideScreen = loadImage("screen image/guide.png");
 
   for (let item of campaignLevel){
     let mapy = loadJSON(item);
@@ -157,6 +161,9 @@ function draw() {
   if (gamePhrase === "battle"){
     fightStart();
   }
+  if (gamePhrase === "Guide"){
+    displayGuide();
+  }
   if (gamePhrase === "Custom"){
     customScreen();
   }
@@ -199,9 +206,8 @@ function mousePressed(){
 
 function keyPressed(){
   if (key === "b"){
+    switchPhrase("start");
     
-    resetButton();
-    gamePhrase = "start";
   }
   if (gamePhrase === "Campaign"){
 
@@ -264,15 +270,27 @@ function switchPhrase(name){
     let crateSlider = new CustomSlider("Crate Time", 100, 1000, 100000, 1000);
     let lifeSlider = new CustomSlider("Lives", 150, 0, 20, 1);
 
-    sliderButton = [healthSlider, crateSlider, lifeSlider];
+    let botSlider = new CustomSlider("BOT training only", 200,1, 5, 1);
+
+    sliderButton = [healthSlider, crateSlider, lifeSlider, botSlider];
 
   }
+
   else if (name === "Guide"){
     gamePhrase = "Guide";
+
   }
+
   else if (name === "Zombie"){
     gamePhrase = "Zombie";
   }
+
+  else if (name === "start"){
+    gamePhrase = "start";
+    resetButton();
+
+  }
+
   else if (name === "Map"){
     // push();
     // fill(200);
@@ -295,18 +313,27 @@ function makeNewMap(){
 }
 
 function battleSetup(health, crateSpeed, lives, opponent){
-
+  console.log(opponent);
   player = new PlayerBaguette(health, lives);
   player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
+  everyMovingThing.push(player);
 
-  bot = new BotPlayer(health, lives);
-  bot.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
+  for (let i = 0; i < opponent; i ++){
+    let bots = new BotPlayer(health, lives);
+    bots.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
+    everyBots.push(bots);
+    everyMovingThing.push(bots);
+  }
+  // bot = new BotPlayer(health, lives);
+  // bot.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
+  // // everyBots.push(bots);
+  // everyMovingThing.push(bot);
   // if (opponent === "bot"){
 
   // }
   
-  everyMovingThing.push(bot);
-  everyMovingThing.push(player);
+  
+  
 
   if (health === 1001){
     allPlayerHealth = Infinity;
@@ -326,7 +353,8 @@ function resetButton(){
   if (currentBlockColor){
     currentBlockColor.end();
   }
-  
+  console.log("back");
   allCampaignButton = [];
+  makeButton();
 }
 

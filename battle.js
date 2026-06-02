@@ -3,7 +3,6 @@ function fightStart(){
   if (!map){
     return;
   }
-  everyMovingThing = [player, bot];
   push();
   generateSurrounding();
   pop();
@@ -14,13 +13,21 @@ function fightStart(){
   player.updatePlayer();
   player.loadPlayer();
   
-  bot.searchPlatform();
-  bot.updatePlayer();
-  bot.botAiManager();
+
+  for (let bots of everyBots){
+    bots.searchPlatform();
+    bots.updatePlayer();
+    bots.botAiManager();
+  }
+
+  // bot.searchPlatform();
+  // bot.updatePlayer();
+  // bot.botAiManager();
 
   displayScreen();
 
   updateCrate();
+  
 
   // push();
   // stroke("black");
@@ -105,8 +112,12 @@ class PlayerBaguette{
       this.yVelocity = 0;
       this.xVelocity = 0;
 
-      if ( !this.lives === Infinity){
+      if ( this.lives !== Infinity){
         this.lives -= 1;
+        console.log(player.lives);
+      }
+      else{
+        console.log("XD");
       }
       
       this.health = structuredClone(allPlayerHealth);
@@ -431,8 +442,13 @@ function generateSurrounding() {
   player.playerXgrid = floor(player.x / REALGRIDSIZE);
   player.playerYgrid = floor(player.y / REALGRIDSIZE);
 
-  bot.playerXgrid = floor(bot.x / REALGRIDSIZE);
-  bot.playerYgrid = floor(bot.y / REALGRIDSIZE);
+  for (let bots of everyBots){
+    bots.playerXgrid = floor(bots.x / REALGRIDSIZE);
+    bots.playerYgrid = floor(bots.y / REALGRIDSIZE);
+  }
+
+  // bot.playerXgrid = floor(bot.x / REALGRIDSIZE);
+  // bot.playerYgrid = floor(bot.y / REALGRIDSIZE);
 
   let whereInGridx = player.x - player.playerXgrid * REALGRIDSIZE;
   let whereInGridy = player.y - player.playerYgrid * REALGRIDSIZE;
@@ -496,9 +512,28 @@ function generateSurrounding() {
       }
     }
   }
-  let BotPosX = (floor(bot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bot.x % REALGRIDSIZE;
-  let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
-  displayBot(BotPosX, BotPosY);
+  for (let bots of everyBots){
+    let BotPosX = (floor(bots.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bots.x % REALGRIDSIZE;
+    let BotPosY = (floor(bots.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bots.y % REALGRIDSIZE;
+    push();
+
+    let x = BotPosX;
+    if (!bots.direction){
+      scale(-1,1);
+      x = -x;
+    }
+
+    imageMode(CENTER);
+    image(bots.imageUsed, x, BotPosY -30, 75,75 );
+    if (bots.currentWeapon !== null){
+      bots.currentWeapon.displayWeapon(x, BotPosY -30);
+    }
+    pop();
+  }
+
+  // let BotPosX = (floor(bot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bot.x % REALGRIDSIZE;
+  // let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
+  // displayBot(BotPosX, BotPosY);
 
   for (let i = everyCrate.length - 1; i >= 0; i--) {
     let item = everyCrate[i];
@@ -595,22 +630,22 @@ function displayCrate(CratePosX, CratePosY){
 
 //----------------------------------------------------- Bot ------------------------------------------------------
 
-function displayBot(PosX, PosY){
-  push();
+// function displayBot(PosX, PosY){
+//   push();
 
-  let x = PosX;
-  if (!bot.direction){
-    scale(-1,1);
-    x = -x;
-  }
+//   let x = PosX;
+//   if (!bot.direction){
+//     scale(-1,1);
+//     x = -x;
+//   }
 
-  imageMode(CENTER);
-  image(bot.imageUsed, x, PosY -30, 75,75 );
-  if (bot.currentWeapon !== null){
-    bot.currentWeapon.displayWeapon(x, PosY -30);
-  }
-  pop();
-}
+//   imageMode(CENTER);
+//   image(bot.imageUsed, x, PosY -30, 75,75 );
+//   if (bot.currentWeapon !== null){
+//     bot.currentWeapon.displayWeapon(x, PosY -30);
+//   }
+//   pop();
+// }
 
 
 class BotPlayer extends PlayerBaguette{
@@ -623,8 +658,8 @@ class BotPlayer extends PlayerBaguette{
 
   botAiManager(){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
-      bot.loseMomentum();
-      bot.y += 20;
+      this.loseMomentum();
+      this.y += 20;
       return;
     }
     this.state = this.daBotbrain();
@@ -641,7 +676,7 @@ class BotPlayer extends PlayerBaguette{
     }
     
     else{
-      bot.loseMomentum();
+      this.loseMomentum();
     }
     this.shoot();
 

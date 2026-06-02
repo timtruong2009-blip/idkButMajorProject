@@ -1,0 +1,3 @@
+function displayGuide(){
+  image(guideScreen, 0,0, width, height);
+}

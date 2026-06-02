@@ -82,6 +82,6 @@ function mapDataReceived(data) {
   console.log(map);
   switchPhrase("battle");
 
-  battleSetup(100, 10000,5, "bot");
+  battleSetup(100, 10000,5, 2);
 }
 

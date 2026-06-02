@@ -50,7 +50,7 @@ class CustomButton{
 class CustomSlider{
   constructor(name, y,min, range, step){
     this.slider = createSlider(min, range, range / 10, step);
-    this.slider.position(600, windowHeight - y - 30, step);
+    this.slider.position(700, windowHeight - y - 30, step);
 
     this.range = range;
     this.name = name;
@@ -67,11 +67,11 @@ class CustomSlider{
 
     textFont("Arial");
     textStyle(BOLD);
-    if (this.ammount === this.range){
-      text("\u221E", 450, windowHeight - this.y);
+    if (this.ammount === this.range && this.name !== "BOT training only"){
+      text("\u221E", 550, windowHeight - this.y);
     }
     else{
-      text(this.ammount, 450, windowHeight - this.y);
+      text(this.ammount, 550, windowHeight - this.y);
     }
     
     pop();
