@@ -1,40 +1,49 @@
 
-function fightStart(){
+function fightStart(who){
   if (!map){
     return;
   }
+  console.log(everyMovingThing);
   push();
   generateSurrounding();
   pop();
+  if (who === "duck"){
+    if (duckLastSpawn + duckSpawnRate < millis()){
+      let newDuck = new BotPlayer(20, 1, duckImg);
+      newDuck.currentWeapon = new Explosion();
+      newDuck.maxSpeed = 5;
+      everyMovingThing.push(newDuck);
+      everyBots.push(newDuck);
+      duckLastSpawn = millis();
+      duckSpawnRate -= 10;
+    }
+  }
+
   spawningCrate();
 
   playerMoving();
   player.searchPlatform();
   player.updatePlayer();
   player.loadPlayer();
+  if (player.deadOrNot()){
+    gamePhrase = "Dead";
+  }
+  
   
 
   for (let bots of everyBots){
     bots.searchPlatform();
     bots.updatePlayer();
-    bots.botAiManager();
+    bots.botAiManager(who);
+    if (bots.deadOrNot()){
+      everyBots.splice(everyBots.indexOf(bots, 1));
+    }
   }
 
-  // bot.searchPlatform();
-  // bot.updatePlayer();
-  // bot.botAiManager();
-
-  displayScreen();
+  displayScreen(who);
 
   updateCrate();
-  
 
-  // push();
-  // stroke("black");
-  // pop();
-  // if (abosluteFreeze !== 0){
-  //   player.y = abosluteFreeze;
-  // }
 }
 
 //-----------------------------------------------Class--------------------------------------------------------------
@@ -126,10 +135,12 @@ class PlayerBaguette{
       this.x = 1500;
       this.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
       if (this.lives < 0){
-        gamePhrase = "Dead";
+        return "end";
       }
+      return false;
     }
   }
+
   gotHit(damage){
     this.health -= damage;
   }
@@ -139,8 +150,6 @@ class PlayerBaguette{
     this.playerYupdate();
 
     this.playerXupdate();
-
-    this.deadOrNot();
   }
   playerJump(){
     if (this.touchGround()){
@@ -372,11 +381,12 @@ class Weapon{
     this.damage = 0;
   }
   displayWeapon(x,y){
-    push();
-    image(this.name, x, y);
-    pop();
+    if (this.name !== null){
+      push();
+      image(this.name, x, y);
+      pop();
+    }
   }
-
 }
 
 class Pistol extends Weapon{
@@ -410,7 +420,7 @@ class Cheese extends Weapon{
     this.knockBack = 10;
     this.frequency = 100;
     this.ammo = 50;
-    this.bulletSpeed = 50;
+    this.bulletSpeed = 25;
     this.damage = 3;
   }
 }
@@ -427,6 +437,17 @@ class Banana extends Weapon{
   }
 }
 
+class Explosion extends Weapon{
+  constructor(){
+    super(null, null);
+    this.range = 10;
+    this.knockBack = 0;
+    this.frequency = 0;
+    this.ammo = 0;
+    this.bulletSpeed = 0;
+    this.damage = 100;
+  }
+}
 // pizza bommarang (nah)
 
 // honey bottle genade / less friction
@@ -630,33 +651,15 @@ function displayCrate(CratePosX, CratePosY){
 
 //----------------------------------------------------- Bot ------------------------------------------------------
 
-// function displayBot(PosX, PosY){
-//   push();
-
-//   let x = PosX;
-//   if (!bot.direction){
-//     scale(-1,1);
-//     x = -x;
-//   }
-
-//   imageMode(CENTER);
-//   image(bot.imageUsed, x, PosY -30, 75,75 );
-//   if (bot.currentWeapon !== null){
-//     bot.currentWeapon.displayWeapon(x, PosY -30);
-//   }
-//   pop();
-// }
-
-
 class BotPlayer extends PlayerBaguette{
-  constructor(health, lives){
+  constructor(health, lives, whatimg){
     super(health, lives);
-    this.imageUsed = botImg;
+    this.imageUsed = whatimg;
     this.name = "bot";
     this.state = "idle";
   }
 
-  botAiManager(){
+  botAiManager(who){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       this.loseMomentum();
       this.y += 20;
@@ -678,7 +681,10 @@ class BotPlayer extends PlayerBaguette{
     else{
       this.loseMomentum();
     }
-    this.shoot();
+    if (who !== "duck"){
+      this.shoot();
+    }
+    
 
   }
 
@@ -724,30 +730,50 @@ class BotPlayer extends PlayerBaguette{
         this.playerJump();
       }
     }
-  }
-  
+  }  
 }
 
 // ---------------------------------------------------Health Screen ------------------------------------------------
 
-function displayScreen(){
-  let screenSection = windowWidth / everyMovingThing.length;
-  for (let thing = 0; thing < everyMovingThing.length; thing ++){
+function displayScreen(who){
+  
+  if (who === "duck"){
+    let screenSection = windowWidth /3;
     push();
-    let offset = screenSection * thing;
+    let offset = screenSection;
     stroke("black");
     rect(screenSection / 3 + offset, height, screenSection / 3, -100);
 
-    text("Lives: " + everyMovingThing[thing].lives ,screenSection / 3 + offset + 10, height - 20);
-    text("Health: " + everyMovingThing[thing].health ,screenSection / 3 + offset + 10, height - 35);
-    text("Ammo Left: " + everyMovingThing[thing].currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 50);
+    text("Lives: " + player.lives ,screenSection / 3 + offset + 10, height - 20);
+    text("Health: " + player.health ,screenSection / 3 + offset + 10, height - 35);
+    text("Ammo Left: " + player.currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 50);
 
     textSize(30);
     textAlign(CENTER);
-    text(everyMovingThing[thing].name ,screenSection / 3 + offset + (screenSection / 6), height - 75);
+    text(player.name ,screenSection / 3 + offset + (screenSection / 6), height - 75);
 
     pop();
   }
+  else{
+    let screenSection = windowWidth / everyMovingThing.length;
+    for (let thing = 0; thing < everyMovingThing.length; thing ++){
+      push();
+      let offset = screenSection * thing;
+      stroke("black");
+      rect(screenSection / 3 + offset, height, screenSection / 3, -100);
+  
+      text("Lives: " + everyMovingThing[thing].lives ,screenSection / 3 + offset + 10, height - 20);
+      text("Health: " + everyMovingThing[thing].health ,screenSection / 3 + offset + 10, height - 35);
+      text("Ammo Left: " + everyMovingThing[thing].currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 50);
+  
+      textSize(30);
+      textAlign(CENTER);
+      text(everyMovingThing[thing].name ,screenSection / 3 + offset + (screenSection / 6), height - 75);
+  
+      pop();
+    }
+  }
+  
 }
 
 function displayBullet(bulletScreenX, bulletScreenY, img){
@@ -755,8 +781,6 @@ function displayBullet(bulletScreenX, bulletScreenY, img){
   imageMode(CENTER);
   image(img, bulletScreenX, bulletScreenY, 100, 50);
   pop();
-
-  
 }
 
 

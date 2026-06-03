@@ -67,6 +67,7 @@ let player;
 let player2;
 
 let playerImg;
+let duckImg;
 
 let bot;
 let botImg;
@@ -93,7 +94,10 @@ let crateMillis = 0;
 let allPlayerHealth = 100;
 let allPlayerlives = 5;
 
-
+let everyDuck = [];
+let duckSpawnRate = 5000;
+let duckLastSpawn = 0;
+let duckMap;
 
 function preload(){
   myFont = loadFont("screen image/Debrosee.ttf");
@@ -109,10 +113,11 @@ function preload(){
   }
   
   // for (){
-
+  duckMap = loadJSON("map_list/duckmap.json");
   // }
   playerImg = loadImage("character/baguette.png");
   botImg = loadImage("character/baguetteBot.png");
+  duckImg = loadImage("character/duck.png");
 
   doorDashCrate = loadImage("character/doordash.png");
 
@@ -159,7 +164,10 @@ function draw() {
     makingMapScreen();
   }
   if (gamePhrase === "battle"){
-    fightStart();
+    fightStart("bot");
+  }
+  if (gamePhrase === "battleDuck"){
+    fightStart("duck");
   }
   if (gamePhrase === "Guide"){
     displayGuide();
@@ -196,7 +204,7 @@ function mousePressed(){
   else if (gamePhrase === "Custom"){
     for (let num = 0; num < allButton.length; num ++){
       if (allButton[num].hover()){
-        battleSetup(sliderButton[0].ammount, sliderButton[1].ammount,sliderButton[2].ammount, "bot");
+        battleSetup(sliderButton[0].ammount, sliderButton[1].ammount,sliderButton[2].ammount, sliderButton[3].ammount);
         console.log(map);
         gamePhrase = "battle";
       }
@@ -221,7 +229,7 @@ function keyPressed(){
   if (gamePhrase === "Zombie"){
 
   }
-  if (gamePhrase === "battle"){
+  if (gamePhrase === "battle" || gamePhrase === "battleDuck" ){
     resetButton();
     if (key === "s"){
       player.moveDown();
@@ -262,7 +270,7 @@ function switchPhrase(name){
 
   else if (name === "Custom"){
     gamePhrase = "Custom";
-    let multiplayerButton = new CustomButton(1, "TWO PLAYERS");
+    let multiplayerButton = new CustomButton(1, "NONE RIGHT NOW");
     let trainingMode = new CustomButton(3, "TRAINING MODE");
     allButton = [multiplayerButton, trainingMode];
 
@@ -282,7 +290,7 @@ function switchPhrase(name){
   }
 
   else if (name === "Zombie"){
-    gamePhrase = "Zombie";
+    gamemodeZombie();
   }
 
   else if (name === "start"){
@@ -313,27 +321,19 @@ function makeNewMap(){
 }
 
 function battleSetup(health, crateSpeed, lives, opponent){
+  everyMovingThing = [];
+  everyDuck = [];
   console.log(opponent);
   player = new PlayerBaguette(health, lives);
   player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
   everyMovingThing.push(player);
 
   for (let i = 0; i < opponent; i ++){
-    let bots = new BotPlayer(health, lives);
+    let bots = new BotPlayer(health, lives, botImg);
     bots.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
     everyBots.push(bots);
     everyMovingThing.push(bots);
   }
-  // bot = new BotPlayer(health, lives);
-  // bot.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
-  // // everyBots.push(bots);
-  // everyMovingThing.push(bot);
-  // if (opponent === "bot"){
-
-  // }
-  
-  
-  
 
   if (health === 1001){
     allPlayerHealth = Infinity;
