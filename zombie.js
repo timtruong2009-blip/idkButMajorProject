@@ -1,4 +1,8 @@
 
+function zombieScreen(){
+  image(zombieScreenImg, 0,0, width, height);
+}
+
 function gamemodeZombie(){
   battleSetupZombieVersion();
   map = duckMap;

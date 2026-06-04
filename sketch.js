@@ -27,100 +27,111 @@
 // const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 
+// All the brainstorm screen/font for design
 let startScreen;
 let campaignscreen;
 let guideScreen;
-
 let customDemo;
+let zombieScreenImg;
+
 let myFont;
 
+// diffrent kind of button
 let gamePhrase  = "start";
 let allButton = [];
 let sliderButton = [];
-
-let buttonName = ["Campaign", "Custom","Guide", "Zombie", "Map"];
 let allCampaignButton = [];
 
+let currentBlockColor;
+
+let buttonName = ["Campaign", "Custom","Guide", "Zombie", "Map"];
+
+// for loading map auto just put the path into the list
 let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json", "map_list/kevin.json"];
 let campaignMapData = [];
 
+// for loading weapon auto put weapon into list
 let weaponList = [{type: "weapon/cheese.png", bull : "weapon/cheese.png", name: "cheese"},
   {type: "weapon/pizza weapon.png", bull : "weapon/pizza weapon.png", name: "pizza"},
   {type: "weapon/gun.png", bull : "weapon/bullet.png", name: "pistol"},
   {type: "weapon/banana.png", bull : "weapon/bananaBullet.png", name: "banana"}
 ];
-
 let weaponData = [];
 
+// map measurement/setting
 let map = [];
-const GRIDSIZE = 32;
+const GRIDSIZE = 32; // only in the MAP function
 const MAPHEIGHT = 30;
 const MAPWIDTH = 60;
 
-const REALGRIDSIZE = 50;
+const REALGRIDSIZE = 50; // for battle
 
-let deathY = 3000;
+let deathY = 3000; // height when you die
 
-let currentBlockColor;
+const GRAVITY = 1;
 
+// entity
 let player;
 let player2;
 
 let playerImg;
 let duckImg;
 
-let bot;
 let botImg;
 
-const GRAVITY = 1;
-
-let cheese;
-let pizza;
-let pistol;
-let bullet;
-
+// things to keep track of
 let everyMovingThing = [];
 let everyBots = [];
 let bulletList = [];
 let everyCrate = [];
 
-let allWeapon = [];
-
+// crate stats
 let doorDashCrate;
 let abosluteFreeze = 0;
 let crateSpawnSpeed = 10000;
 let crateMillis = 0;
 
+// player stats
 let allPlayerHealth = 100;
 let allPlayerlives = 5;
 
+// duck stats
 let everyDuck = [];
 let duckSpawnRate = 5000;
 let duckLastSpawn = 0;
 let duckMap;
 
+
 function preload(){
+  // cool font found
   myFont = loadFont("screen image/Debrosee.ttf");
 
-  startScreen = loadImage("screen image/Baguette start screen.png");
-  campaignscreen = loadImage("screen image/campaignplan.png");
-  customDemo = loadImage("screen image/custom demo screen.png");
+  // load screen so that it looks cool
+  startScreen = loadImage("screen image/mainscreen.png");
+  campaignscreen = loadImage("screen image/campaignscreen.png");
+  customDemo = loadImage("screen image/customscreen.png");
   guideScreen = loadImage("screen image/guide.png");
+  zombieScreenImg = loadImage("screen image/zombiescreen.png");
 
+
+  // load all available maps
   for (let item of campaignLevel){
     let mapy = loadJSON(item);
     campaignMapData.push(mapy);
   }
   
-  // for (){
+  // exclusive map for zombie
   duckMap = loadJSON("map_list/duckmap.json");
-  // }
+
+  // entity image
   playerImg = loadImage("character/baguette.png");
   botImg = loadImage("character/baguetteBot.png");
   duckImg = loadImage("character/duck.png");
 
+  // crate image
   doorDashCrate = loadImage("character/doordash.png");
 
+  //loading all weapons
   for (let item of weaponList){
     let weap = loadImage(item.type);
     let bullet = weap;
@@ -129,20 +140,9 @@ function preload(){
     }
     weaponData.push({type: weap, bull: bullet, name: item.name} );
   }
-
-  // cheese = loadImage("weapon/cheese.png");
-  // allWeapon.push("cheese");
-
-  // pizza = loadImage("weapon/pizza weapon.png");
-  // allWeapon.push("pizza");
-
-  // pistol = loadImage("weapon/gun.png");
-  // allWeapon.push("pistol");
-  
-  // gunBullet = loadImage("weapon/bullet.png");
-
 }
 
+// basic setup for game
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
@@ -175,12 +175,16 @@ function draw() {
   if (gamePhrase === "Custom"){
     customScreen();
   }
+  if (gamePhrase === "Zombie"){
+    zombieScreen();
+  }
   if (gamePhrase === "Dead"){
     console.log("dead");
   }
   // s
 }
 
+// mouse press, mostly for pressing buttons
 function mousePressed(){
   if (gamePhrase === "start"){
     for (let button of allButton){
@@ -212,6 +216,7 @@ function mousePressed(){
   }
 }
 
+// key pressed for player battle or color wheel
 function keyPressed(){
   if (key === "b"){
     switchPhrase("start");
@@ -227,7 +232,7 @@ function keyPressed(){
 
   }
   if (gamePhrase === "Zombie"){
-
+    gamemodeZombie();
   }
   if (gamePhrase === "battle" || gamePhrase === "battleDuck" ){
     resetButton();
@@ -255,8 +260,9 @@ function keyPressed(){
   }
 }
 
-
+// when switching to other phrase do basic setup
 function switchPhrase(name){
+  // if campaign then load level
   if (name === "Campaign"){
     gamePhrase = "Campaign";
     loadingGameMap();
@@ -264,10 +270,12 @@ function switchPhrase(name){
       loadLevelText(level);
     }
   }
+  // if battle then just battle ig
   else if (name === "battle"){
     gamePhrase = "battle";
   }
 
+  // if custom then setup all the button and slider
   else if (name === "Custom"){
     gamePhrase = "Custom";
     let multiplayerButton = new CustomButton(1, "NONE RIGHT NOW");
@@ -277,11 +285,8 @@ function switchPhrase(name){
     let healthSlider = new CustomSlider("Start Health", 50,1, 1001, 10);
     let crateSlider = new CustomSlider("Crate Time", 100, 1000, 100000, 1000);
     let lifeSlider = new CustomSlider("Lives", 150, 0, 20, 1);
-
     let botSlider = new CustomSlider("BOT training only", 200,1, 5, 1);
-
     sliderButton = [healthSlider, crateSlider, lifeSlider, botSlider];
-
   }
 
   else if (name === "Guide"){
@@ -290,7 +295,8 @@ function switchPhrase(name){
   }
 
   else if (name === "Zombie"){
-    gamemodeZombie();
+    gamePhrase = "Zombie";
+
   }
 
   else if (name === "start"){
@@ -298,17 +304,14 @@ function switchPhrase(name){
     resetButton();
 
   }
-
+  // load color wheel
   else if (name === "Map"){
-    // push();
-    // fill(200);
-    // makeNewMap();
-    // pop();
     gamePhrase = "Map";
     currentBlockColor = new CurrentBlockColor();
   }
 }
 
+// making a brand new blank map
 function makeNewMap(){
   map = [];
   for (let y = 0; y <= MAPHEIGHT; y ++){
@@ -320,6 +323,7 @@ function makeNewMap(){
   }
 }
 
+// when you battle, setup all the basic stuff as well as reset sum stuff
 function battleSetup(health, crateSpeed, lives, opponent){
   everyMovingThing = [];
   everyDuck = [];
@@ -346,6 +350,7 @@ function battleSetup(health, crateSpeed, lives, opponent){
   crateMillis = millis();
 }
 
+// if b is pressed then reset the whole stuff
 function resetButton(){
   for(let slide of sliderButton){
     slide.end();

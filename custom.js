@@ -1,6 +1,6 @@
 
 function customScreen(){
-  // image(customDemo,0,0, windowWidth, windowHeight);
+  image(customDemo,0,0, windowWidth, windowHeight);
 
   for (let butt of allButton){
     butt.display();

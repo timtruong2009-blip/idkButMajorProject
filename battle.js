@@ -3,7 +3,6 @@ function fightStart(who){
   if (!map){
     return;
   }
-  console.log(everyMovingThing);
   push();
   generateSurrounding();
   pop();
@@ -42,8 +41,13 @@ function fightStart(who){
 
   displayScreen(who);
 
-  updateCrate();
+  updateCrate(who);
 
+  duckSkillOnly(who);
+
+  if (everyBots.length === 0 && who !== "duck"){
+    gamePhrase = "Win";
+  }
 }
 
 //-----------------------------------------------Class--------------------------------------------------------------
@@ -123,10 +127,10 @@ class PlayerBaguette{
 
       if ( this.lives !== Infinity){
         this.lives -= 1;
-        console.log(player.lives);
+        // console.log(player.lives);
       }
       else{
-        console.log("XD");
+        // console.log("XD");
       }
       
       this.health = structuredClone(allPlayerHealth);
@@ -353,6 +357,18 @@ function playerMoving(){
 
 //------------------------------------------------ Weapon ----------------------------------------------------
 
+function duckSkillOnly(who){
+  if (who !== "duck"){
+    return;
+  }
+  for (let duck of everyBots){
+    if (duck.playerXgrid === player.playerXgrid && duck.playerYgrid === player.playerYgrid){
+      player.gotHit(duck.currentWeapon.damage);
+      everyBots.splice(everyBots.indexOf(duck), 1);
+    }
+  }
+}
+
 class Bullet{
   constructor(x, y, type, range, knockBack, speed, damage){
     this.x = x;
@@ -437,10 +453,11 @@ class Banana extends Weapon{
   }
 }
 
+// duck explosion
 class Explosion extends Weapon{
   constructor(){
     super(null, null);
-    this.range = 10;
+    this.range = 0;
     this.knockBack = 0;
     this.frequency = 0;
     this.ammo = 0;
@@ -459,7 +476,7 @@ class Explosion extends Weapon{
 
 //------------------------------------------------Map---------------------------------------------------------
 
-function generateSurrounding() {
+function generateSurrounding(who) {
   player.playerXgrid = floor(player.x / REALGRIDSIZE);
   player.playerYgrid = floor(player.y / REALGRIDSIZE);
 
@@ -573,7 +590,7 @@ function generateSurrounding() {
     let bulletScreenX = (floor(shot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + shot.x % REALGRIDSIZE;
     let bulletScreenY = (floor(shot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + shot.y % REALGRIDSIZE;
 
-    displayBullet(bulletScreenX, bulletScreenY, shot.type);
+    displayBullet(bulletScreenX, bulletScreenY, shot.type, shot.speed);
 
     shot.x += shot.speed; 
     shot.range -= Math.abs(shot.speed);
@@ -598,6 +615,7 @@ function generateSurrounding() {
 
 function spawningCrate(){
   if (crateMillis + crateSpawnSpeed < millis()){
+    // console.log("create");
     let xSpawn = floor(random(60));
     let newCrate = new Crate(xSpawn * REALGRIDSIZE);
     everyCrate.push(newCrate);
@@ -605,29 +623,57 @@ function spawningCrate(){
   }
 }
 
-function updateCrate(){
+function updateCrate(who){
   for (let item of everyCrate){
     item.searchPlatform();
     item.updatePlayer();
+    if (who !== "duck"){
+      for (let people of everyMovingThing){
+        if (item.playerXgrid === people.playerXgrid && item.playerYgrid === people.playerYgrid){
+          let randomWeapon = weaponData[floor(random(weaponData.length))];
     
-    for (let people of everyMovingThing){
-      if (item.playerXgrid === people.playerXgrid && item.playerYgrid === people.playerYgrid){
+          if (randomWeapon.name === "pistol"){
+            people.currentWeapon = new Banana(randomWeapon.type, randomWeapon.bull);
+          }
+    
+          else if (randomWeapon.name === "pizza"){
+            people.currentWeapon = new Pizza(randomWeapon.type, randomWeapon.bull);
+          }
+    
+          else if (randomWeapon.name === "cheese"){
+            people.currentWeapon = new Cheese(randomWeapon.type, randomWeapon.bull);
+          }
+    
+          else if (randomWeapon.name === "banana"){
+            people.currentWeapon = new Banana(randomWeapon.type, randomWeapon.bull);
+          }
+    
+          everyCrate.splice(everyCrate.indexOf(item), 1);
+          
+        }
+        else if(item.playerYgrid * REALGRIDSIZE > 2500){
+          everyCrate.splice(everyCrate.indexOf(item), 1);
+        }
+      }
+    }
+    else{
+      if (item.playerXgrid === player.playerXgrid && item.playerYgrid === player.playerYgrid){
         let randomWeapon = weaponData[floor(random(weaponData.length))];
   
         if (randomWeapon.name === "pistol"){
-          people.currentWeapon = new Pistol(randomWeapon.type, randomWeapon.bull);
+          player.currentWeapon = new Pistol(randomWeapon.type, randomWeapon.bull);
         }
   
         else if (randomWeapon.name === "pizza"){
-          people.currentWeapon = new Pizza(randomWeapon.type, randomWeapon.bull);
+          player.currentWeapon = new Pizza(randomWeapon.type, randomWeapon.bull);
         }
   
         else if (randomWeapon.name === "cheese"){
-          people.currentWeapon = new Cheese(randomWeapon.type, randomWeapon.bull);
+          player.currentWeapon = new Cheese(randomWeapon.type, randomWeapon.bull);
         }
   
         else if (randomWeapon.name === "banana"){
-          people.currentWeapon = new Banana(randomWeapon.type, randomWeapon.bull);
+          player.currentWeapon = new Banana(randomWeapon.type, randomWeapon.bull);
         }
   
         everyCrate.splice(everyCrate.indexOf(item), 1);
@@ -637,7 +683,6 @@ function updateCrate(){
         everyCrate.splice(everyCrate.indexOf(item), 1);
       }
     }
-    
   }
 }
 
@@ -656,7 +701,9 @@ class BotPlayer extends PlayerBaguette{
     super(health, lives);
     this.imageUsed = whatimg;
     this.name = "bot";
-    this.state = "idle";
+    this.stateX = "idle";
+    this.stateY = "idle";
+    // this.whatActionNext = [];
   }
 
   botAiManager(who){
@@ -665,23 +712,42 @@ class BotPlayer extends PlayerBaguette{
       this.y += 20;
       return;
     }
-    this.state = this.daBotbrain();
-    if (this.state === "idle"){
+    this.daBotbrain();
+    // brain for x movement
+    if (this.stateX === "idle"){
       this.idle();
     }
-    else if (this.state === "right"){
+    else if (this.stateX === "right"){
       this.playerMove(1);
       this.direction = false;
     }
-    else if (this.state === "left"){
+    else if (this.stateX === "left"){
       this.playerMove(-1);
       this.direction = true;
     }
-    
     else{
       this.loseMomentum();
     }
-    if (who !== "duck"){
+    
+    // brain for y movement
+    // if (this.stateY === "idle"){
+    //   this.idle();
+    // }
+    if (this.stateY === "up"){
+      this.playerJump();
+      if (this.y - player.y > 0){
+        this.doubleJumping();
+      }
+    }
+    else if (this.stateY === "down"){
+      this.moveDown();
+    }
+    else{
+    }
+
+
+
+    if (who !== "duck" && Math.abs(this.x - player.x) < this.currentWeapon.range){
       this.shoot();
     }
     
@@ -692,14 +758,55 @@ class BotPlayer extends PlayerBaguette{
     let XdistanceFromPLayer = this.x - player.x;
     let YdistanceFromPLayer = this.y - player.y;
 
+    // console.log(YdistanceFromPLayer);
     if (XdistanceFromPLayer < 0){
-      return "right";
+      this.stateX = "right";
     }
     else if (XdistanceFromPLayer > 0){
-      return "left";
+      this.stateX =  "left";
     }
     else{
-      return "idle";
+      this.stateX =  "idle";
+    }
+
+    if (YdistanceFromPLayer > 0){
+      this.stateY = "up";
+    }
+    else if (YdistanceFromPLayer < 0){
+      this.stateY =  "down";
+    }
+    else{
+      this.stateY =  "idle";
+    }
+
+    
+    if (player.playerYgrid < 0){
+      return;
+    }
+    let numOfYGridUnderPlayer = MAPHEIGHT - player.playerYgrid;
+    let fallingPlayer = true;
+    for (let i = 0; i < numOfYGridUnderPlayer; i++){
+      if (Array.isArray(map[player.playerYgrid + i][player.playerXgrid])){
+        fallingPlayer = false;
+      }
+    }
+    if (fallingPlayer){
+      this.stateY = "idle"
+    }
+
+    if (player.playerYgrid < 0){
+      return;
+    }
+    
+    let numOfXGridNextPlayer = MAPHEIGHT - player.playerYgrid;
+    let sidePlayer = true;
+    for (let i = 0; i < numOfYGridUnderPlayer; i++){
+      if (Array.isArray(map[player.playerYgrid + i][player.playerXgrid])){
+        sidePlayer = false;
+      }
+    }
+    if (fallingPlayer){
+      this.stateY = "idle"
     }
   }
 
@@ -776,11 +883,17 @@ function displayScreen(who){
   
 }
 
-function displayBullet(bulletScreenX, bulletScreenY, img){
+function displayBullet(bulletScreenX, bulletScreenY, img, direction){
   push();
+  let x = bulletScreenX;
+  if (direction < 0){
+    scale(-1,1);
+    x = -x;
+  }
   imageMode(CENTER);
-  image(img, bulletScreenX, bulletScreenY, 100, 50);
+  image(img, x, bulletScreenY, 100, 50);
   pop();
+
 }
 
 
