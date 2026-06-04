@@ -327,6 +327,8 @@ function makeNewMap(){
 function battleSetup(health, crateSpeed, lives, opponent){
   everyMovingThing = [];
   everyDuck = [];
+  everyBots = [];
+
   console.log(opponent);
   player = new PlayerBaguette(health, lives);
   player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);

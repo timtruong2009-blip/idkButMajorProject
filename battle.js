@@ -421,7 +421,7 @@ class Pizza extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
     this.range = 300;
-    this.knockBack = 50;
+    this.knockBack = 35;
     this.frequency = 400;
     this.ammo = 7;
     this.bulletSpeed = 40;
@@ -433,7 +433,7 @@ class Cheese extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
     this.range = 1000;
-    this.knockBack = 10;
+    this.knockBack = 15;
     this.frequency = 100;
     this.ammo = 50;
     this.bulletSpeed = 25;
@@ -445,7 +445,7 @@ class Banana extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
     this.range = 1000;
-    this.knockBack = 50;
+    this.knockBack = 30;
     this.frequency = 1500;
     this.ammo = 10;
     this.bulletSpeed = 20;
@@ -633,7 +633,7 @@ function updateCrate(who){
           let randomWeapon = weaponData[floor(random(weaponData.length))];
     
           if (randomWeapon.name === "pistol"){
-            people.currentWeapon = new Banana(randomWeapon.type, randomWeapon.bull);
+            people.currentWeapon = new Banana(weaponData[1].type, weaponData[1].bull);
           }
     
           else if (randomWeapon.name === "pizza"){
@@ -713,6 +713,7 @@ class BotPlayer extends PlayerBaguette{
       return;
     }
     this.daBotbrain();
+    console.log(this.stateX);
     // brain for x movement
     if (this.stateX === "idle"){
       this.idle();
@@ -790,52 +791,31 @@ class BotPlayer extends PlayerBaguette{
         fallingPlayer = false;
       }
     }
+    // console.log(fallingPlayer);
     if (fallingPlayer){
-      this.stateY = "idle"
-    }
-
-    if (player.playerYgrid < 0){
-      return;
+      this.stateY = "idle";
+      this.stateX = "idle";
     }
     
-    let numOfXGridNextPlayer = MAPHEIGHT - player.playerYgrid;
-    let sidePlayer = true;
-    for (let i = 0; i < numOfYGridUnderPlayer; i++){
-      if (Array.isArray(map[player.playerYgrid + i][player.playerXgrid])){
-        sidePlayer = false;
-      }
-    }
-    if (fallingPlayer){
-      this.stateY = "idle"
-    }
+    // let numOfXGridNextPlayer = MAPHEIGHT - player.playerYgrid;
+    // let sidePlayer = true;
+    // for (let i = 0; i < numOfYGridUnderPlayer; i++){
+    //   if (Array.isArray(map[player.playerYgrid + i][player.playerXgrid])){
+    //     sidePlayer = false;
+    //   }
+    // }
+    // if (fallingPlayer){
+    //   this.stateY = "idle";
+    //   this.stateX = "idle";
+    // }
   }
 
   idle(){
-    if (this.touchGround){
-      let idk = floor(random(2.99));
-
-      if (idk === 1 ){
-        if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid -1])){
-          this.playerMove(1);
-        }
-        else{
-          this.playerJump();
-        }
-      }
-      else if (idk === 2 ){
-        if (Array.isArray(map[this.playerYgrid +1][this.playerXgrid +1])){
-          this.playerMove(-1);
-        }
-        else{
-          this.playerJump();
-        }
-      }
-      else if (idk === 0 ){
-        this.playerJump();
-      }
-      else{
-        this.playerJump();
-      }
+    if (this.xVelocity > 0){
+      this.playerMove(-1);
+    }
+    else if (this.xVelocity < 0){
+      this.playerMove(1);
     }
   }  
 }
