@@ -31,6 +31,7 @@ function fightStart(who){
   
 
   for (let bots of everyBots){
+    console.log(bots.stateY);
     bots.searchPlatform();
     bots.updatePlayer();
     bots.botAiManager(who);
@@ -163,11 +164,13 @@ class PlayerBaguette{
     }
     else if (this.doubleJump){
       this.doubleJumping();
+      
     }
   }
   searchPlatform(){
     
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
+      this.platformY = structuredClone(deathY);
       return;
     }
     if (this.yVelocity >= 0){
@@ -223,7 +226,7 @@ class PlayerBaguette{
     if (this.gettingKnockBack && Math.abs(this.xVelocity )> this.maxSpeed){
       let futureSpeed = this.xVelocity + direction /2;
       if (Math.abs(futureSpeed ) > Math.abs(this.xVelocity )){
-
+        this.loseMomentum();
       }
       else {
         this.xVelocity += direction /2;
@@ -242,7 +245,7 @@ class PlayerBaguette{
   }
   loseMomentum(){
     if (this.gettingKnockBack){
-      this.xVelocity *= 0.95;
+      this.xVelocity *= 0.97;
       if (Math.abs(this.xVelocity) <= this.maxSpeed){
         this.gettingKnockBack = false;
       }
@@ -421,7 +424,7 @@ class Pizza extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
     this.range = 300;
-    this.knockBack = 35;
+    this.knockBack = 40;
     this.frequency = 400;
     this.ammo = 7;
     this.bulletSpeed = 40;
@@ -445,7 +448,7 @@ class Banana extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
     this.range = 1000;
-    this.knockBack = 30;
+    this.knockBack = 35;
     this.frequency = 1500;
     this.ammo = 10;
     this.bulletSpeed = 20;
@@ -476,7 +479,7 @@ class Explosion extends Weapon{
 
 //------------------------------------------------Map---------------------------------------------------------
 
-function generateSurrounding(who) {
+function generateSurrounding() {
   player.playerXgrid = floor(player.x / REALGRIDSIZE);
   player.playerYgrid = floor(player.y / REALGRIDSIZE);
 
@@ -573,6 +576,18 @@ function generateSurrounding(who) {
   // let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
   // displayBot(BotPosX, BotPosY);
 
+  //---------------------------------display damage particle;
+  for (let i = everyDamageParticle.length - 1; i >= 0; i--) {
+    let parti = everyDamageParticle[i];
+
+    let partiX = (floor(parti.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + parti.x % REALGRIDSIZE;
+    let partiY = (floor(parti.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + parti.y % REALGRIDSIZE;
+    if ( parti.display(partiX, partiY) === "end"){
+      everyDamageParticle.splice(i, 1);
+    }
+  }
+
+  // --------------------------------displaying crate on map
   for (let i = everyCrate.length - 1; i >= 0; i--) {
     let item = everyCrate[i];
     item.playerXgrid = floor(item.x / REALGRIDSIZE);
@@ -581,29 +596,29 @@ function generateSurrounding(who) {
     let CratePosX = (floor(item.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + item.x % REALGRIDSIZE;
     let CratePosY = (floor(item.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + item.y % REALGRIDSIZE;
     displayCrate(CratePosX, CratePosY);
-    
   }
 
-  // bullet update / load
+  // ---------------------------------bullet update / load
   for (let i = bulletList.length - 1; i >= 0; i--) {
     let shot = bulletList[i];
     let bulletScreenX = (floor(shot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + shot.x % REALGRIDSIZE;
     let bulletScreenY = (floor(shot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + shot.y % REALGRIDSIZE;
-
     displayBullet(bulletScreenX, bulletScreenY, shot.type, shot.speed);
 
     shot.x += shot.speed; 
     shot.range -= Math.abs(shot.speed);
 
     for (let thing of everyMovingThing){
-      if (shot.x > thing.x - 20 && shot.x < thing.x + 20 && shot.y < thing.y && shot.y > thing.y - 60 ){
+      if (shot.x > thing.x - 25 && shot.x < thing.x + 25 && shot.y < thing.y + 20 && shot.y > thing.y - 80 ){
         bulletList.splice(i, 1);
         thing.xVelocity += shot.knockBack * (shot.speed / Math.abs(shot.speed));
         thing.gotHit(shot.damage);
         thing.gettingKnockBack = true;
+
+        let newParti = new DamageIndicator(shot.x, shot.y, shot.damage);
+        everyDamageParticle.push(newParti);
       }
     }
-
     if (shot.range <= 0) {
       bulletList.splice(i, 1);
     }
@@ -703,6 +718,11 @@ class BotPlayer extends PlayerBaguette{
     this.name = "bot";
     this.stateX = "idle";
     this.stateY = "idle";
+    this.lastJump = 0;
+    this.timeToJump = 200;
+
+    this.checkYtime = 1000;
+    this.lastYCheck = 0;
     // this.whatActionNext = [];
   }
 
@@ -713,7 +733,6 @@ class BotPlayer extends PlayerBaguette{
       return;
     }
     this.daBotbrain();
-    console.log(this.stateX);
     // brain for x movement
     if (this.stateX === "idle"){
       this.idle();
@@ -730,14 +749,10 @@ class BotPlayer extends PlayerBaguette{
       this.loseMomentum();
     }
     
-    // brain for y movement
-    // if (this.stateY === "idle"){
-    //   this.idle();
-    // }
     if (this.stateY === "up"){
-      this.playerJump();
-      if (this.y - player.y > 0){
-        this.doubleJumping();
+      if (this.lastJump + this.timeToJump < millis()){
+        this.playerJump();
+        this.lastJump = millis();
       }
     }
     else if (this.stateY === "down"){
@@ -773,8 +788,12 @@ class BotPlayer extends PlayerBaguette{
     if (YdistanceFromPLayer > 0){
       this.stateY = "up";
     }
-    else if (YdistanceFromPLayer < 0){
-      this.stateY =  "down";
+    else if (YdistanceFromPLayer < 0 ){
+      if (this.lastYCheck + this.checkYtime < millis()){
+        this.stateY =  "down";
+        this.lastYCheck = millis();
+      }
+      
     }
     else{
       this.stateY =  "idle";
@@ -796,18 +815,18 @@ class BotPlayer extends PlayerBaguette{
       this.stateY = "idle";
       this.stateX = "idle";
     }
-    
-    // let numOfXGridNextPlayer = MAPHEIGHT - player.playerYgrid;
-    // let sidePlayer = true;
-    // for (let i = 0; i < numOfYGridUnderPlayer; i++){
-    //   if (Array.isArray(map[player.playerYgrid + i][player.playerXgrid])){
-    //     sidePlayer = false;
-    //   }
-    // }
-    // if (fallingPlayer){
-    //   this.stateY = "idle";
-    //   this.stateX = "idle";
-    // }
+
+    let aboutToFall = true;
+    for (let i = 1; i < numOfYGridUnderPlayer; i++){
+      if (Array.isArray(map[player.playerYgrid + i][player.playerXgrid])){
+        aboutToFall = false;
+      }
+    }
+    // console.log(fallingPlayer);
+    if (aboutToFall && this.stateY === "down"){
+      this.stateY = "idle";
+    }
+
   }
 
   idle(){
@@ -823,7 +842,6 @@ class BotPlayer extends PlayerBaguette{
 // ---------------------------------------------------Health Screen ------------------------------------------------
 
 function displayScreen(who){
-  
   if (who === "duck"){
     let screenSection = windowWidth /3;
     push();
@@ -855,7 +873,7 @@ function displayScreen(who){
   
       textSize(30);
       textAlign(CENTER);
-      text(everyMovingThing[thing].name ,screenSection / 3 + offset + (screenSection / 6), height - 75);
+      text(everyMovingThing[thing].name ,screenSection / 3 + offset + screenSection / 6, height - 75);
   
       pop();
     }
@@ -876,8 +894,26 @@ function displayBullet(bulletScreenX, bulletScreenY, img, direction){
 
 }
 
+class DamageIndicator{
+  constructor(x, y, amount){
+    this.x = x;
+    this.y = y;
+    this.timestart = millis();
+    this.timeEnd = 1000;
+    this.amount = amount;
+  }
+  display(partiX, partiY){
+    push();
 
+    textAlign(CENTER);
+    textFont("Arial");
+    textSize(10);
+    fill("red");
+    text(this.amount, partiX, partiY);
+    if (this.timestart + this.timeEnd < millis()){
+      return "end";
+    }
 
-
-
-
+    pop(); 
+  }
+}

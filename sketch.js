@@ -86,6 +86,7 @@ let everyMovingThing = [];
 let everyBots = [];
 let bulletList = [];
 let everyCrate = [];
+let everyDamageParticle = [];
 
 // crate stats
 let doorDashCrate;
@@ -216,7 +217,6 @@ function mousePressed(){
     for (let num = 0; num < allButton.length; num ++){
       if (allButton[num].hover()){
         battleSetup(sliderButton[0].ammount, sliderButton[1].ammount,sliderButton[2].ammount, sliderButton[3].ammount);
-        console.log(map);
         gamePhrase = "battle";
       }
     }
@@ -242,7 +242,7 @@ function keyPressed(){
     gamemodeZombie();
   }
   if (gamePhrase === "battle" || gamePhrase === "battleDuck" ){
-    resetButton();
+
     if (key === "s"){
       player.moveDown();
     }
@@ -336,7 +336,6 @@ function battleSetup(health, crateSpeed, lives, opponent){
   everyDuck = [];
   everyBots = [];
 
-  console.log(opponent);
   player = new PlayerBaguette(health, lives);
   player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
   everyMovingThing.push(player);
@@ -367,7 +366,6 @@ function resetButton(){
   if (currentBlockColor){
     currentBlockColor.end();
   }
-  console.log("back");
   allCampaignButton = [];
   makeButton();
 }
