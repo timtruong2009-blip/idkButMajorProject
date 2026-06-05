@@ -47,6 +47,9 @@ class CampaignButton{
     push();
     this.turnStroke();
     textSize(100);
+    fill("white");
+    circle(this.x +30, this.y -40, this.radius * 2.2);
+
     fill(this.buttonColor);
     circle(this.x +30, this.y -40, this.radius *2);
     

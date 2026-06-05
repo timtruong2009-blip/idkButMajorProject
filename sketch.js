@@ -285,7 +285,7 @@ function switchPhrase(name){
     let healthSlider = new CustomSlider("Start Health", 50,1, 1001, 10);
     let crateSlider = new CustomSlider("Crate Time", 100, 1000, 100000, 1000);
     let lifeSlider = new CustomSlider("Lives", 150, 0, 20, 1);
-    let botSlider = new CustomSlider("BOT training only", 200,1, 5, 1);
+    let botSlider = new CustomSlider("num of bot", 200,1, 5, 1);
     sliderButton = [healthSlider, crateSlider, lifeSlider, botSlider];
   }
 
