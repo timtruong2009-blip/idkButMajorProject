@@ -33,6 +33,8 @@ let campaignscreen;
 let guideScreen;
 let customDemo;
 let zombieScreenImg;
+let winScreen;
+let defeatScreen;
 
 let myFont;
 
@@ -112,6 +114,8 @@ function preload(){
   customDemo = loadImage("screen image/customscreen.png");
   guideScreen = loadImage("screen image/guide.png");
   zombieScreenImg = loadImage("screen image/zombiescreen.png");
+  winScreen = loadImage("screen image/winscreen.png");
+  defeatScreen = loadImage("screen image/leo's defeat screen.png");
 
 
   // load all available maps
@@ -178,8 +182,11 @@ function draw() {
   if (gamePhrase === "Zombie"){
     zombieScreen();
   }
-  if (gamePhrase === "Dead"){
-    console.log("dead");
+  if (gamePhrase === "win"){
+    image(winScreen, 0, 0, width, height);
+  }
+  if (gamePhrase === "lose"){
+    image(defeatScreen, 0, 0, width, height);
   }
   // s
 }

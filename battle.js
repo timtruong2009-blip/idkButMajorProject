@@ -25,7 +25,7 @@ function fightStart(who){
   player.updatePlayer();
   player.loadPlayer();
   if (player.deadOrNot()){
-    gamePhrase = "Dead";
+    gamePhrase = "lose";
   }
   
   
@@ -46,7 +46,7 @@ function fightStart(who){
   duckSkillOnly(who);
 
   if (everyBots.length === 0 && who !== "duck"){
-    gamePhrase = "Win";
+    gamePhrase = "win";
   }
 }
 
