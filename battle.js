@@ -297,6 +297,11 @@ class PlayerBaguette{
     else{
       this.x += this.xVelocity;
     }
+
+    if (Math.abs(this.yVelocity) > 30){
+      this.yVelocity = 20;
+
+    }
   }
 
   // Shooting
@@ -572,10 +577,6 @@ function generateSurrounding() {
     pop();
   }
 
-  // let BotPosX = (floor(bot.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bot.x % REALGRIDSIZE;
-  // let BotPosY = (floor(bot.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bot.y % REALGRIDSIZE;
-  // displayBot(BotPosX, BotPosY);
-
   //---------------------------------display damage particle;
   for (let i = everyDamageParticle.length - 1; i >= 0; i--) {
     let parti = everyDamageParticle[i];
@@ -615,7 +616,7 @@ function generateSurrounding() {
         thing.gotHit(shot.damage);
         thing.gettingKnockBack = true;
 
-        let newParti = new DamageIndicator(shot.x, shot.y, shot.damage);
+        let newParti = new DamageIndicator(thing.x, thing.y - 30, shot.damage);
         everyDamageParticle.push(newParti);
       }
     }
@@ -676,7 +677,7 @@ function updateCrate(who){
         let randomWeapon = weaponData[floor(random(weaponData.length))];
   
         if (randomWeapon.name === "pistol"){
-          player.currentWeapon = new Pistol(randomWeapon.type, randomWeapon.bull);
+          player.currentWeapon = new Banana(weaponData[3].type, weaponData[3].bull);
         }
   
         else if (randomWeapon.name === "pizza"){
@@ -849,11 +850,12 @@ function displayScreen(who){
     stroke("black");
     rect(screenSection / 3 + offset, height, screenSection / 3, -100);
 
+    textSize(30);
     text("Lives: " + player.lives ,screenSection / 3 + offset + 10, height - 20);
     text("Health: " + player.health ,screenSection / 3 + offset + 10, height - 35);
     text("Ammo Left: " + player.currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 50);
 
-    textSize(30);
+    textSize(50);
     textAlign(CENTER);
     text(player.name ,screenSection / 3 + offset + (screenSection / 6), height - 75);
 
@@ -865,15 +867,22 @@ function displayScreen(who){
       push();
       let offset = screenSection * thing;
       stroke("black");
-      rect(screenSection / 3 + offset, height, screenSection / 3, -100);
-  
-      text("Lives: " + everyMovingThing[thing].lives ,screenSection / 3 + offset + 10, height - 20);
-      text("Health: " + everyMovingThing[thing].health ,screenSection / 3 + offset + 10, height - 35);
-      text("Ammo Left: " + everyMovingThing[thing].currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 50);
-  
+      rect(screenSection / 3 + offset, height, screenSection / 3, -150);
+      
       textSize(30);
+      text("Lives: " + everyMovingThing[thing].lives ,screenSection / 3 + offset + 10, height - 10);
+      text("Health: " + everyMovingThing[thing].health ,screenSection / 3 + offset + 10, height - 40);
+      if (everyMovingThing[thing].currentWeapon.ammo === Infinity){
+        text("Ammo Left: " + "\u221E" ,screenSection / 3 + offset + 10, height - 70);
+      }
+      else{
+        text("Ammo Left: " + everyMovingThing[thing].currentWeapon.ammo ,screenSection / 3 + offset + 10, height - 70);
+
+      }
+  
+      textSize(50);
       textAlign(CENTER);
-      text(everyMovingThing[thing].name ,screenSection / 3 + offset + screenSection / 6, height - 75);
+      text(everyMovingThing[thing].name ,screenSection / 3 + offset + screenSection / 6, height - 100);
   
       pop();
     }
@@ -899,17 +908,25 @@ class DamageIndicator{
     this.x = x;
     this.y = y;
     this.timestart = millis();
-    this.timeEnd = 1000;
+    this.timeEnd = 2000;
     this.amount = amount;
+    this.fade = 255;
+    this.fadeSpeed = 5;
+    this.lastFade = 0;
   }
   display(partiX, partiY){
     push();
 
     textAlign(CENTER);
     textFont("Arial");
-    textSize(10);
-    fill("red");
+    textSize(50);
+    textStyle(BOLD);
+    fill(255, 0, 0, this.fade);
     text(this.amount, partiX, partiY);
+    if (this.lastFade + this.fadeSpeed < millis()){
+      this.fade -= 10;
+      this.lastFade = millis();
+    }
     pop(); 
     if (this.timestart + this.timeEnd < millis()){
       return "end";
