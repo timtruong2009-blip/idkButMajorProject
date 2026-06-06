@@ -910,10 +910,11 @@ class DamageIndicator{
     textSize(10);
     fill("red");
     text(this.amount, partiX, partiY);
+    pop(); 
     if (this.timestart + this.timeEnd < millis()){
       return "end";
     }
 
-    pop(); 
+    
   }
 }
