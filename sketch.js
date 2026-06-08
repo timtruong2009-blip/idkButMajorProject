@@ -5,28 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-// // Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// // TODO: Add SDKs for Firebase products that you want to use
-// // https://firebase.google.com/docs/web/setup#available-libraries
-
-// // Your web app's Firebase configuration
-// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// const firebaseConfig = {
-//   apiKey: "AIzaSyBQvMEmYIfl60Rz-TaDhjv2jheR3iq4thA",
-//   authDomain: "compsci30.firebaseapp.com",
-//   projectId: "compsci30",
-//   storageBucket: "compsci30.firebasestorage.app",
-//   messagingSenderId: "785998879392",
-//   appId: "1:785998879392:web:afdd4ecbb5d9a3d87987c5",
-//   measurementId: "G-7RQ0TZM4SB"
-// };
-
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-
 // All the brainstorm screen/font for design
 let startScreen;
 let campaignscreen;
@@ -156,6 +134,7 @@ function setup() {
   makeNewMap();
 }
 
+// activate all the main function
 function draw() {
   resizeCanvas(windowWidth, windowHeight);
   background(255);
@@ -189,7 +168,6 @@ function draw() {
   if (gamePhrase === "lose"){
     image(defeatScreen, 0, 0, width, height);
   }
-  // s
 }
 
 // mouse press, mostly for pressing buttons
@@ -201,10 +179,7 @@ function mousePressed(){
       }
     }
   }
-
-  else if (gamePhrase === "Map"){
-  }
-
+  //to detect which level was picked
   else if (gamePhrase === "Campaign"){
     for (let num = 0; num < allCampaignButton.length; num ++){
       if (allCampaignButton[num].hover()){
@@ -212,7 +187,7 @@ function mousePressed(){
       }
     }
   }
-
+  // to detect which gamemode is click
   else if (gamePhrase === "Custom"){
     for (let num = 0; num < allButton.length; num ++){
       if (allButton[num].hover()){
@@ -227,22 +202,11 @@ function mousePressed(){
 function keyPressed(){
   if (key === "b"){
     switchPhrase("start");
-    
-  }
-  if (gamePhrase === "Campaign"){
-
-  }
-  else if (gamePhrase === "Custom"){
-    
-  }
-  if (gamePhrase === "Setting"){
-
   }
   if (gamePhrase === "Zombie"){
     gamemodeZombie();
   }
   if (gamePhrase === "battle" || gamePhrase === "battleDuck" ){
-
     if (key === "s"){
       player.moveDown();
     }
@@ -257,6 +221,7 @@ function keyPressed(){
     if (key === "s"){
       saveJSON(map, "newmap.json");
     }
+    // to see what square of the map was pressed
     if (key === "e"){
       mouse_press_pos = {x : floor(mouseX / GRIDSIZE), y : floor(mouseY/ GRIDSIZE)};
       map[mouse_press_pos.y][mouse_press_pos.x] = 0;
