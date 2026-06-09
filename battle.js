@@ -506,28 +506,33 @@ class Explosion extends Weapon{
 //------------------------------------------------Map---------------------------------------------------------
 // generating the map
 function generateSurrounding() {
-  // give player where you are
+  // give player what grid they on
   player.playerXgrid = floor(player.x / REALGRIDSIZE);
   player.playerYgrid = floor(player.y / REALGRIDSIZE);
 
+  // give not what grid they on
   for (let bots of everyBots){
     bots.playerXgrid = floor(bots.x / REALGRIDSIZE);
     bots.playerYgrid = floor(bots.y / REALGRIDSIZE);
   }
 
+  // where in the grid are they on
   let whereInGridx = player.x - player.playerXgrid * REALGRIDSIZE;
   let whereInGridy = player.y - player.playerYgrid * REALGRIDSIZE;
-
+  
+  // every grid that we can see on screen
   let gridOnScreenH = Math.ceil(windowHeight / REALGRIDSIZE) ;
   let gridOnScreenW = Math.ceil(windowWidth / REALGRIDSIZE) ;
-
+  
+  // smallest view that we can see
   let smallestX = player.playerXgrid - Math.floor(gridOnScreenW/2);
   let smallestY = player.playerYgrid - Math.floor(gridOnScreenH/2);
 
+  // biggest grid that we can see
   let biggestX = player.playerXgrid + Math.ceil(gridOnScreenW/2) +1;
   let biggestY = player.playerYgrid + Math.ceil(gridOnScreenH/2) +2;
 
-  
+  //-------------------------------------display map
   for (let y = smallestY; y < biggestY; y ++){
     for (let x = smallestX; x < biggestX; x ++){
       let cordX = (x - smallestX) * REALGRIDSIZE - whereInGridx;
@@ -577,6 +582,8 @@ function generateSurrounding() {
       }
     }
   }
+
+  // ------------------------------------display bot
   for (let bots of everyBots){
     let BotPosX = (floor(bots.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bots.x % REALGRIDSIZE;
     let BotPosY = (floor(bots.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bots.y % REALGRIDSIZE;
@@ -648,6 +655,7 @@ function generateSurrounding() {
 
 //------------------------------------------------Crate---------------------------------------------------------------
 
+// calculating the time to spawn crate 
 function spawningCrate(){
   if (crateMillis + crateSpawnSpeed < millis()){
     // console.log("create");
