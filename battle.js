@@ -666,6 +666,7 @@ function spawningCrate(){
   }
 }
 
+// updating crate/sense it someone pick it up
 function updateCrate(who){
   for (let item of everyCrate){
     item.searchPlatform();
@@ -729,6 +730,7 @@ function updateCrate(who){
   }
 }
 
+// displaying the crate onto the screen
 function displayCrate(CratePosX, CratePosY){
   push();
   imageMode(CENTER);
@@ -739,6 +741,7 @@ function displayCrate(CratePosX, CratePosY){
 
 //----------------------------------------------------- Bot ------------------------------------------------------
 
+// bot and their ai
 class BotPlayer extends PlayerBaguette{
   constructor(health, lives, whatimg){
     super(health, lives);
@@ -754,6 +757,7 @@ class BotPlayer extends PlayerBaguette{
     // this.whatActionNext = [];
   }
 
+  // ai brain, decide what to do from its state
   botAiManager(who){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       this.loseMomentum();
@@ -798,6 +802,7 @@ class BotPlayer extends PlayerBaguette{
 
   }
 
+  // decide what state it should be in
   daBotbrain(){
     let XdistanceFromPLayer = this.x - player.x;
     let YdistanceFromPLayer = this.y - player.y;
@@ -857,6 +862,7 @@ class BotPlayer extends PlayerBaguette{
 
   }
 
+  // idling
   idle(){
     if (this.xVelocity > 0){
       this.playerMove(-1);
@@ -869,7 +875,9 @@ class BotPlayer extends PlayerBaguette{
 
 // ---------------------------------------------------Health Screen ------------------------------------------------
 
+// this is use to display the player health/lives/ammos as well as the bots
 function displayScreen(who){
+  // only when in zombie gamemode
   if (who === "duck"){
     let screenSection = windowWidth /3;
     push();
@@ -888,6 +896,7 @@ function displayScreen(who){
 
     pop();
   }
+  // if not zombie gamemode then work normally
   else{
     let screenSection = windowWidth / everyMovingThing.length;
     for (let thing = 0; thing < everyMovingThing.length; thing ++){
@@ -917,6 +926,7 @@ function displayScreen(who){
   
 }
 
+// displaying the bullet shot onto the screen
 function displayBullet(bulletScreenX, bulletScreenY, img, direction){
   push();
   let x = bulletScreenX;
@@ -930,6 +940,7 @@ function displayBullet(bulletScreenX, bulletScreenY, img, direction){
 
 }
 
+// damage indicator that appears when you hit enemy
 class DamageIndicator{
   constructor(x, y, amount){
     this.x = x;
