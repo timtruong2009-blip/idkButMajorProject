@@ -1,4 +1,5 @@
 
+// calling all the function/load button
 function mainScreen() {
   image(startScreen, 0, 0, windowWidth, windowHeight);
   for (let button of allButton){
@@ -19,6 +20,7 @@ class Button{
     this.size = 50;
     this.transparent = 100;
   }
+  // dusplaying button
   display(){
     push();
     this.x = windowWidth - windowWidth /4;
@@ -30,6 +32,7 @@ class Button{
 
     pop();
   }
+  // if button is hovered above return true
   hover(){
     if (mouseX > this.x && mouseX < this.x + this.size *4 && mouseY < this.y && mouseY > this.y - this.size){
       return true;

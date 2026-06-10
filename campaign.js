@@ -1,5 +1,5 @@
 
-
+// displaying every campaign button in the campaign list
 function MapCampaign(){
   image(campaignscreen, 0, 0, windowWidth, windowHeight);
   for (let num = 0; num < allCampaignButton.length; num ++){
@@ -19,10 +19,6 @@ function MapCampaign(){
   
 }
 
-function loadingGameMap(){
-  // map = loadJSON("map_list/examplemap.json");
-}
-
 // Load all campaign level available
 function loadLevelText(num){
   if (num <= 4){
@@ -33,6 +29,7 @@ function loadLevelText(num){
   } 
 }
 
+// class for campaign button
 class CampaignButton{
   constructor(x, y, num){
     this.x = x;
@@ -75,7 +72,7 @@ class CampaignButton{
 
 }
 
-
+// loading the json map in folder if yo
 function loadMap(path) {
   loadJSON(path, mapDataReceived);
 }

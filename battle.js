@@ -473,7 +473,7 @@ class Cheese extends Weapon{
 class Banana extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
-    this.range = 1000;
+    this.range = 2000;
     this.knockBack = 35;
     this.frequency = 1500;
     this.ammo = 10;
@@ -677,7 +677,7 @@ function updateCrate(who){
           let randomWeapon = weaponData[floor(random(weaponData.length))];
     
           if (randomWeapon.name === "pistol"){
-            people.currentWeapon = new Banana(weaponData[1].type, weaponData[1].bull);
+            people.currentWeapon = new Pizza(weaponData[1].type, weaponData[1].bull);
           }
     
           else if (randomWeapon.name === "pizza"){

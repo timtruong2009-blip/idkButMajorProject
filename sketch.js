@@ -3,7 +3,8 @@
 // Date
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - for movement i use velocity and x, applied gravity to them.
+// - classes were use for my player and my bot was a child class from class player
 
 // All the brainstorm screen/font for design
 let startScreen;
@@ -192,6 +193,7 @@ function mousePressed(){
     for (let num = 0; num < allButton.length; num ++){
       if (allButton[num].hover()){
         battleSetup(sliderButton[0].ammount, sliderButton[1].ammount,sliderButton[2].ammount, sliderButton[3].ammount);
+        resetButton();
         gamePhrase = "battle";
       }
     }
@@ -237,7 +239,6 @@ function switchPhrase(name){
   // if campaign then load level
   if (name === "Campaign"){
     gamePhrase = "Campaign";
-    loadingGameMap();
     for (let level = 1; level <= campaignLevel.length; level ++){
       loadLevelText(level);
     }
