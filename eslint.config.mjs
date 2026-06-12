@@ -446,13 +446,14 @@ export default [
       indent: ["warn", 2],
       semi: ["warn", "always"],
       "no-extra-parens": ["warn", "all"],
-      curly: ["warn", "all"],
+      curly: ["off", "all"],
       eqeqeq: ["warn", "always"],
       "no-floating-decimal": ["warn"],
       "brace-style": ["warn", "stroustrup"],
       "no-var": ["error"],
       "no-cond-assign": ["error", "always"],
       "no-unused-vars": "off",
+      
     },
   },
 ];
