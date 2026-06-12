@@ -5,6 +5,8 @@
 // Extra for Experts:
 // - for movement i use velocity and x, applied gravity to them.
 // - classes were use for my player and my bot was a child class from class player
+// - all image rendering was done on the player coord/ any image outside will not be render
+// - The bot doesn't suicide with you, if you got shot off or fall out of bound the bot will stop moving
 
 // All the brainstorm screen/font for design
 let startScreen;
@@ -28,7 +30,7 @@ let currentBlockColor;
 let buttonName = ["Campaign", "Custom","Guide", "Zombie", "Map"];
 
 // for loading map auto just put the path into the list
-let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json", "map_list/kevin.json"];
+let campaignLevel = ["map_list/examplemap.json", "map_list/jungle map.json", "map_list/goodmap.json", "map_list/leo's cat.json", "map_list/kevin.json", "map_list/eric.json"];
 let campaignMapData = [];
 
 // for loading weapon auto put weapon into list

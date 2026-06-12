@@ -11,15 +11,7 @@ function fightStart(who){
 
   // if the gamemode selected is duck mode then it spawn duck without weapon
   if (who === "duck"){
-    if (duckLastSpawn + duckSpawnRate < millis()){
-      let newDuck = new BotPlayer(20, 1, duckImg);
-      newDuck.currentWeapon = new Explosion();
-      newDuck.maxSpeed = 5;
-      everyMovingThing.push(newDuck);
-      everyBots.push(newDuck);
-      duckLastSpawn = millis();
-      duckSpawnRate -= 10;
-    }
+    spawnDuck();
   }
   // loading player and everything
   playerMoving();
@@ -52,6 +44,18 @@ function fightStart(who){
   // detect if no bot you win
   if (everyBots.length === 0 && who !== "duck"){
     gamePhrase = "win";
+  }
+}
+
+function spawnDuck(){
+  if (duckLastSpawn + duckSpawnRate < millis()){
+    let newDuck = new BotPlayer(20, 1, duckImg);
+    newDuck.currentWeapon = new Explosion();
+    newDuck.maxSpeed = 5;
+    everyMovingThing.push(newDuck);
+    everyBots.push(newDuck);
+    duckLastSpawn = millis();
+    duckSpawnRate -= 10;
   }
 }
 
@@ -132,7 +136,7 @@ class PlayerBaguette{
 
   // check if player fall out of bound or not
   deadOrNot(){
-    if (this.y > 2900 || this.health <= 0 || Math.abs(this.x) > 4000){
+    if (this.y > deathY || this.health <= 0 || Math.abs(this.x) > 4000){
       
       this.yVelocity = 0;
       this.xVelocity = 0;
