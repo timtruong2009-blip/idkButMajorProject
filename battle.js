@@ -6,20 +6,14 @@ function fightStart(who){
   push();
   generateSurrounding();
   pop();
-  if (who === "duck"){
-    if (duckLastSpawn + duckSpawnRate < millis()){
-      let newDuck = new BotPlayer(20, 1, duckImg);
-      newDuck.currentWeapon = new Explosion();
-      newDuck.maxSpeed = 5;
-      everyMovingThing.push(newDuck);
-      everyBots.push(newDuck);
-      duckLastSpawn = millis();
-      duckSpawnRate -= 10;
-    }
-  }
 
   spawningCrate();
 
+  // if the gamemode selected is duck mode then it spawn duck without weapon
+  if (who === "duck"){
+    spawnDuck();
+  }
+  // loading player and everything
   playerMoving();
   player.searchPlatform();
   player.updatePlayer();
@@ -28,8 +22,7 @@ function fightStart(who){
     gamePhrase = "lose";
   }
   
-  
-
+  // loading all the bots
   for (let bots of everyBots){
     console.log(bots.stateY);
     bots.searchPlatform();
@@ -39,15 +32,30 @@ function fightStart(who){
       everyBots.splice(everyBots.indexOf(bots, 1));
     }
   }
-
+  
+  // displaying ui and health and stuff
   displayScreen(who);
 
   updateCrate(who);
 
+  // if duck touch player player DIE
   duckSkillOnly(who);
 
+  // detect if no bot you win
   if (everyBots.length === 0 && who !== "duck"){
     gamePhrase = "win";
+  }
+}
+
+function spawnDuck(){
+  if (duckLastSpawn + duckSpawnRate < millis()){
+    let newDuck = new BotPlayer(20, 1, duckImg);
+    newDuck.currentWeapon = new Explosion();
+    newDuck.maxSpeed = 5;
+    everyMovingThing.push(newDuck);
+    everyBots.push(newDuck);
+    duckLastSpawn = millis();
+    duckSpawnRate -= 10;
   }
 }
 
@@ -76,17 +84,21 @@ class PlayerBaguette{
       this.health = health;
     }
 
+    // the grid on map player is on (for easier time calculating)
     this.playerXgrid = 0;
     this.playerYgrid = 0;
 
+    // x and y value
     this.x = 1500;
     this.y = -1500;
     this.xPosOnScreen = width /2;
     this.yPosOnScreen = height /2;
 
+    // x and y velo
     this.yVelocity = 0;
     this.xVelocity = 0;
 
+    // player stats and stuff
     this.jumpspeed = -20;
     this.speed = 2;
     this.maxSpeed = 10;
@@ -103,6 +115,8 @@ class PlayerBaguette{
     this.rightWall = Infinity;
     this.leftWall = -Infinity;
   }
+  //---------------------------------------------General
+  // load player and weapon on the screen
   loadPlayer(){
     push();
     let x = this.xPosOnScreen;
@@ -120,8 +134,9 @@ class PlayerBaguette{
     pop();
   }
 
+  // check if player fall out of bound or not
   deadOrNot(){
-    if (this.y > 2900 || this.health <= 0 || Math.abs(this.x) > 4000){
+    if (this.y > deathY || this.health <= 0 || Math.abs(this.x) > 4000){
       
       this.yVelocity = 0;
       this.xVelocity = 0;
@@ -146,16 +161,20 @@ class PlayerBaguette{
     }
   }
 
+  // if got hit delete health
   gotHit(damage){
     this.health -= damage;
   }
 
-  // Player y/gravity
+  // updating player x and y velocity
   updatePlayer(){
     this.playerYupdate();
 
     this.playerXupdate();
   }
+
+  //---------------------------------------------Y section/jumping/gravity
+  // if w press call to jump
   playerJump(){
     if (this.touchGround()){
       this.yVelocity += this.jumpspeed;
@@ -167,6 +186,12 @@ class PlayerBaguette{
       
     }
   }
+  // if on air then double jump
+  doubleJumping(){
+    this.yVelocity = structuredClone(this.jumpspeed + 3);
+    this.doubleJump = false;
+  }
+  // search if there is platform under to stand on
   searchPlatform(){
     
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
@@ -186,6 +211,7 @@ class PlayerBaguette{
       }
     }
   }
+  // search if player is currently standing on ground or not
   touchGround(){
     if (this.y <= this.platformY -2){
       return false;
@@ -195,6 +221,7 @@ class PlayerBaguette{
       return true;
     }
   }
+  // updating player y 
   playerYupdate(){
     this.yVelocity += GRAVITY;
     if (this.yVelocity >= this.maxFallSpeed){
@@ -210,12 +237,9 @@ class PlayerBaguette{
       
     }
   }
-  doubleJumping(){
-    this.yVelocity = structuredClone(this.jumpspeed + 3);
-    this.doubleJump = false;
-  }
 
-  // Player x/friction/ wall collision
+  //-------------------------------------------- X Section/friction/ wall collision
+
   moveDown(){
     if (this.touchGround()){
       this.y += 5;
@@ -304,7 +328,7 @@ class PlayerBaguette{
     }
   }
 
-  // Shooting
+  // ---------------------------------------------Shooting
   shoot(){
     if (this.lastTimeShot + this.currentWeapon.frequency < millis()){
       let direc = 1;
@@ -331,17 +355,16 @@ class PlayerBaguette{
   }
 }
 
-
-
+// crate/ for same grav as player
 class Crate extends PlayerBaguette{
   constructor(x){
     super();
     this.x = x;
     this.maxFallSpeed = 10;
   }
-
 }
 
+// player key press to move
 function playerMoving(){
   if (keyIsDown(65)){
     player.playerMove(-1);
@@ -364,7 +387,7 @@ function playerMoving(){
 }
 
 //------------------------------------------------ Weapon ----------------------------------------------------
-
+// if duck touch it kill you
 function duckSkillOnly(who){
   if (who !== "duck"){
     return;
@@ -377,6 +400,7 @@ function duckSkillOnly(who){
   }
 }
 
+// base for all bullet
 class Bullet{
   constructor(x, y, type, range, knockBack, speed, damage){
     this.x = x;
@@ -389,6 +413,7 @@ class Bullet{
   }
 }
 
+// base for all weapons
 class Weapon{
   constructor(img, bullet){
     this.name = img;
@@ -412,7 +437,7 @@ class Weapon{
     }
   }
 }
-
+//-----------------------------------------------All custom weapon
 class Pistol extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
@@ -452,7 +477,7 @@ class Cheese extends Weapon{
 class Banana extends Weapon{
   constructor(img, bullet){
     super(img, bullet);
-    this.range = 1000;
+    this.range = 2000;
     this.knockBack = 35;
     this.frequency = 1500;
     this.ammo = 10;
@@ -483,32 +508,35 @@ class Explosion extends Weapon{
 
 
 //------------------------------------------------Map---------------------------------------------------------
-
+// generating the map
 function generateSurrounding() {
+  // give player what grid they on
   player.playerXgrid = floor(player.x / REALGRIDSIZE);
   player.playerYgrid = floor(player.y / REALGRIDSIZE);
 
+  // give not what grid they on
   for (let bots of everyBots){
     bots.playerXgrid = floor(bots.x / REALGRIDSIZE);
     bots.playerYgrid = floor(bots.y / REALGRIDSIZE);
   }
 
-  // bot.playerXgrid = floor(bot.x / REALGRIDSIZE);
-  // bot.playerYgrid = floor(bot.y / REALGRIDSIZE);
-
+  // where in the grid are they on
   let whereInGridx = player.x - player.playerXgrid * REALGRIDSIZE;
   let whereInGridy = player.y - player.playerYgrid * REALGRIDSIZE;
-
+  
+  // every grid that we can see on screen
   let gridOnScreenH = Math.ceil(windowHeight / REALGRIDSIZE) ;
   let gridOnScreenW = Math.ceil(windowWidth / REALGRIDSIZE) ;
-
+  
+  // smallest view that we can see
   let smallestX = player.playerXgrid - Math.floor(gridOnScreenW/2);
   let smallestY = player.playerYgrid - Math.floor(gridOnScreenH/2);
 
+  // biggest grid that we can see
   let biggestX = player.playerXgrid + Math.ceil(gridOnScreenW/2) +1;
   let biggestY = player.playerYgrid + Math.ceil(gridOnScreenH/2) +2;
 
-  
+  //-------------------------------------display map
   for (let y = smallestY; y < biggestY; y ++){
     for (let x = smallestX; x < biggestX; x ++){
       let cordX = (x - smallestX) * REALGRIDSIZE - whereInGridx;
@@ -558,6 +586,8 @@ function generateSurrounding() {
       }
     }
   }
+
+  // ------------------------------------display bot
   for (let bots of everyBots){
     let BotPosX = (floor(bots.x / REALGRIDSIZE) - smallestX) * REALGRIDSIZE - whereInGridx + bots.x % REALGRIDSIZE;
     let BotPosY = (floor(bots.y / REALGRIDSIZE) - smallestY) * REALGRIDSIZE - whereInGridy + bots.y % REALGRIDSIZE;
@@ -629,6 +659,7 @@ function generateSurrounding() {
 
 //------------------------------------------------Crate---------------------------------------------------------------
 
+// calculating the time to spawn crate 
 function spawningCrate(){
   if (crateMillis + crateSpawnSpeed < millis()){
     // console.log("create");
@@ -639,6 +670,7 @@ function spawningCrate(){
   }
 }
 
+// updating crate/sense it someone pick it up
 function updateCrate(who){
   for (let item of everyCrate){
     item.searchPlatform();
@@ -649,7 +681,7 @@ function updateCrate(who){
           let randomWeapon = weaponData[floor(random(weaponData.length))];
     
           if (randomWeapon.name === "pistol"){
-            people.currentWeapon = new Banana(weaponData[1].type, weaponData[1].bull);
+            people.currentWeapon = new Pizza(weaponData[1].type, weaponData[1].bull);
           }
     
           else if (randomWeapon.name === "pizza"){
@@ -702,6 +734,7 @@ function updateCrate(who){
   }
 }
 
+// displaying the crate onto the screen
 function displayCrate(CratePosX, CratePosY){
   push();
   imageMode(CENTER);
@@ -712,6 +745,7 @@ function displayCrate(CratePosX, CratePosY){
 
 //----------------------------------------------------- Bot ------------------------------------------------------
 
+// bot and their ai
 class BotPlayer extends PlayerBaguette{
   constructor(health, lives, whatimg){
     super(health, lives);
@@ -727,6 +761,7 @@ class BotPlayer extends PlayerBaguette{
     // this.whatActionNext = [];
   }
 
+  // ai brain, decide what to do from its state
   botAiManager(who){
     if (this.playerXgrid <= 0 || this.playerXgrid >= 60 || this.playerYgrid <= 0 || this.playerYgrid >= 30){
       this.loseMomentum();
@@ -771,6 +806,7 @@ class BotPlayer extends PlayerBaguette{
 
   }
 
+  // decide what state it should be in
   daBotbrain(){
     let XdistanceFromPLayer = this.x - player.x;
     let YdistanceFromPLayer = this.y - player.y;
@@ -830,6 +866,7 @@ class BotPlayer extends PlayerBaguette{
 
   }
 
+  // idling
   idle(){
     if (this.xVelocity > 0){
       this.playerMove(-1);
@@ -842,7 +879,9 @@ class BotPlayer extends PlayerBaguette{
 
 // ---------------------------------------------------Health Screen ------------------------------------------------
 
+// this is use to display the player health/lives/ammos as well as the bots
 function displayScreen(who){
+  // only when in zombie gamemode
   if (who === "duck"){
     let screenSection = windowWidth /3;
     push();
@@ -861,6 +900,7 @@ function displayScreen(who){
 
     pop();
   }
+  // if not zombie gamemode then work normally
   else{
     let screenSection = windowWidth / everyMovingThing.length;
     for (let thing = 0; thing < everyMovingThing.length; thing ++){
@@ -890,6 +930,7 @@ function displayScreen(who){
   
 }
 
+// displaying the bullet shot onto the screen
 function displayBullet(bulletScreenX, bulletScreenY, img, direction){
   push();
   let x = bulletScreenX;
@@ -903,6 +944,7 @@ function displayBullet(bulletScreenX, bulletScreenY, img, direction){
 
 }
 
+// damage indicator that appears when you hit enemy
 class DamageIndicator{
   constructor(x, y, amount){
     this.x = x;

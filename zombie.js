@@ -10,6 +10,9 @@ function gamemodeZombie(){
 }
 
 function battleSetupZombieVersion(){
+  everyMovingThing = [];
+  everyDuck = [];
+  everyBots = [];
   player = new PlayerBaguette(100, 5);
   player.currentWeapon = new Pistol(weaponData[2].type, weaponData[2].bull);
   everyMovingThing.push(player);
